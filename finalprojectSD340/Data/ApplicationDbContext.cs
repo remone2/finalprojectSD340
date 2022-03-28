@@ -10,5 +10,10 @@ namespace finalprojectSD340.Data
             : base(options)
         {
         }
+
+        public DbSet<Comment> Comments { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
+        public DbSet<Project> Projects { get; set; }
+        public DbSet<Models.Task> Tasks { get; set; }
     }
 }

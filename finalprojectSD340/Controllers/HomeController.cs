@@ -1,4 +1,6 @@
-﻿using finalprojectSD340.Models;
+﻿using finalprojectSD340.Data;
+using finalprojectSD340.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -6,11 +8,15 @@ namespace finalprojectSD340.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ApplicationDbContext _db;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ApplicationDbContext db, RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
         {
-            _logger = logger;
+            _db = db;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         public IActionResult Index()
