@@ -2,7 +2,7 @@
 
 namespace finalprojectSD340.Models
 {
-    public abstract class ApplicationUser : IdentityUser
+    public class ApplicationUser : IdentityUser
     {
 
     }
