@@ -15,4 +15,5 @@ namespace finalprojectSD340.Models
 
             context.SaveChanges();
         }
+    }
 }
