@@ -45,15 +45,69 @@ namespace finalprojectSD340.Controllers
         }
 
         [HttpPost]
-        public IActionResult CompleteTask(int taskId)
+        public async Task<IActionResult> CompleteTask(int taskId)
         {
-            return RedirectToAction("DeveloperTask");
+            try
+            {
+                Models.Task task = _db.Tasks.First(t => t.Id == taskId);
+
+                if (task == null)
+                    return NotFound();
+
+                if (task.IsCompleted)
+                {
+                    throw new Exception("Task is already marked complete");
+                }
+
+                if (!task.IsCompleted)
+                {
+                    task.IsCompleted = true;
+                    task.CompletionPercentage = 100;
+                }
+
+                await _db.SaveChangesAsync();
+
+                return RedirectToAction("DeveloperTasks");
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Error", ex.Message);
+            }
         }
 
         [HttpPost]
-        public IActionResult TaskPercentage(int percentInput)
+        public async Task<IActionResult> TaskPercentage(int percentInput, int taskId)
         {
-            return RedirectToAction("DeveloperTask");
+            try
+            {
+                if (percentInput == null || taskId == null)
+                    return BadRequest();
+
+                Models.Task task = _db.Tasks.First(t => t.Id == taskId);
+
+                if (task == null)
+                    return NotFound();
+
+                task.CompletionPercentage = percentInput;
+
+                await _db.SaveChangesAsync();
+
+                if (percentInput == 100)
+                {
+                    return RedirectToAction("CompleteTask", task.Id);
+                }
+
+                return RedirectToAction("DeveloperTasks");
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Error", ex.Message);
+            }
+        }
+
+        public IActionResult TaskComment()
+        {
+            return View();
         }
 
         public IActionResult Privacy()
