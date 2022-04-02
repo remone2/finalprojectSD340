@@ -1,0 +1,80 @@
+﻿@model IEnumerable<finalprojectSD340.Models.Task>
+
+@{
+    ViewData["Title"] = "DeveloperTasks";
+}
+
+<h1>Tasks</h1>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsCompleted)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CompletionPercentage)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Project)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Priority)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Deadline)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsCompleted)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CompletionPercentage)
+                <form asp-action="TaskPercentage" method="post">
+                    <input id="percentInput" type="range" min="0" max="100" oninput="this.nextElementSibling.value = this.value">
+                    <output style="margin:0.5rem">@item.CompletionPercentage</output>
+                    <button type="submit" style="margin:0.5rem">Adjust</button>
+                </form>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Project.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Priority)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Deadline)
+            </td>
+            <td>
+                <form asp-action="CompleteTask" method="post">
+                    <button asp-route-taskId="@item.Id" type="submit">Complete</button>
+                </form>
+                @if (item.IsCompleted)
+                {
+                    <form asp-action="TaskComment">
+                        <button asp-route-taskId="@item.Id" type="submit">Comment</button>
+                    </form>
+                }
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
