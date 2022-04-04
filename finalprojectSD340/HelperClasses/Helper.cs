@@ -4,8 +4,8 @@
     {
         public abstract void Add();
 
-        public abstract void Delete();
+        public abstract void Delete(int id);
 
-        public abstract void Update();
+        public abstract void Update(int id);
     }
 }

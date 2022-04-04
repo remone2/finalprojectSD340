@@ -7,12 +7,12 @@
 
         }
 
-        public override void Delete()
+        public override void Delete(int id)
         {
             
         }
 
-        public override void Update()
+        public override void Update(int id) 
         {
             
         }
