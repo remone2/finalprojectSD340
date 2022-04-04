@@ -1,6 +1,6 @@
 ﻿namespace finalprojectSD340.Models
 {
-    public class ProjectHelper
+    public class Developer
     {
     }
 }
