@@ -2,10 +2,10 @@
 {
     public abstract class Helper
     {
-        public abstract void Add();
+        public abstract string Add();
 
-        public abstract void Delete(int id);
+        public abstract string Delete(int id);
 
-        public abstract void Update(int id);
+        public abstract string Update(int id);
     }
 }
