@@ -46,9 +46,29 @@ namespace finalprojectSD340.HelperClasses
             return "";
         }
 
-        public string Assign(int devIdToAssign)
+        public string Assign(string devIdToAssign, int taskId)
         {
-            return "";
+            Models.Task? taskToAssign = _db.Tasks.FirstOrDefault(t => t.Id == taskId);
+            ApplicationUser? dev = _db.Users.FirstOrDefault(u => u.Id == devIdToAssign);
+
+            if (taskToAssign == null)
+                return "Task does not exist in the database.";
+
+            if (dev == null)
+                return "Developer does not exist in the database.";
+
+            try
+            {
+                taskToAssign.DeveloperId = dev.Id;
+                taskToAssign.Developer = dev;
+                _db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+
+            return "Developer has been assigned.";
         }
     }
 }
