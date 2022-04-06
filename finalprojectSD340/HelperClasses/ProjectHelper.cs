@@ -11,6 +11,7 @@ namespace finalprojectSD340.HelperClasses
         {
             _db = db;
         }
+
         public override string Add(int projectId)
         {
             return "";
@@ -40,13 +41,51 @@ namespace finalprojectSD340.HelperClasses
             return "Project successfully deleted.";
         }
 
-        public override string UpdatePriority(int id, Priority newPriority) 
+        public override string UpdatePriority(int id, Priority newPriority)
         {
+            Project? projectToUpdate = _db.Projects.FirstOrDefault(p => p.Id == id);
+
+            if (projectToUpdate != null)
+            {
+                try
+                {
+                    projectToUpdate.Priority = newPriority;
+                    _db.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    return ex.Message;
+                }
+            }
+            else
+            {
+                return "Project does not exist in the database.";
+            }
+
             return "Priority updated.";
         }
 
         public override string UpdateDeadline(int id, DateTime newDeadline)
         {
+            Project? projectToUpdate = _db.Projects.FirstOrDefault(p => p.Id == id);
+
+            if (projectToUpdate != null)
+            {
+                try
+                {
+                    projectToUpdate.Deadline = newDeadline;
+                    _db.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    return ex.Message;
+                }
+            }
+            else
+            {
+                return "Project does not exist in the database.";
+            }
+
             return "Deadline updated.";
         }
     }
