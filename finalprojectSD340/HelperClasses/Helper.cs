@@ -1,4 +1,5 @@
 ﻿using finalprojectSD340.Models;
+using finalprojectSD340.Data;
 
 namespace finalprojectSD340.HelperClasses
 {
