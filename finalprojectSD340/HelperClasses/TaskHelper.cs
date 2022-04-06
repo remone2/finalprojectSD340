@@ -12,7 +12,7 @@ namespace finalprojectSD340.HelperClasses
             _db = db;
         }
 
-        public override string Add()
+        public override string Add(int projectId)
         {
             return "";
         }
@@ -35,15 +35,57 @@ namespace finalprojectSD340.HelperClasses
             }
             else
             {
-                return "Task does not exist in database";
+                return "Task does not exist in database.";
             }
 
-            return "Task Successfully Deleted!";
+            return "Task successfully deleted.";
         }
 
-        public override string Update(int id)
+        public override string UpdatePriority(int id, Priority newPriority)
         {
-            return "";
+            Models.Task? taskToUpdate = _db.Tasks.FirstOrDefault(t => t.Id == id);
+
+            if (taskToUpdate != null)
+            {
+                try
+                {
+                    taskToUpdate.Priority = newPriority;
+                    _db.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    return ex.Message;
+                }
+            }
+            else
+            {
+                return "Task does not exist in database.";
+            }
+
+            return "Priority updated.";
+        }
+
+        public override string UpdateDeadline(int id, DateTime newDeadline)
+        {
+            Models.Task? taskToUpdate = _db.Tasks.FirstOrDefault(t => t.Id == id);
+
+            if (taskToUpdate != null)
+            {
+                try
+                {
+                    taskToUpdate.Deadline = newDeadline;
+                    _db.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    return ex.Message;
+                }
+            }
+            else
+            {
+                return "Task does not exist in database.";
+            }
+            return "Deadline updated.";
         }
 
         public string Assign(string devIdToAssign, int taskId)

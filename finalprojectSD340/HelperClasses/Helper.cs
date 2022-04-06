@@ -1,11 +1,15 @@
-﻿namespace finalprojectSD340.HelperClasses
+﻿using finalprojectSD340.Models;
+
+namespace finalprojectSD340.HelperClasses
 {
     public abstract class Helper
     {
-        public abstract string Add();
+        public abstract string Add(int projectId);
 
         public abstract string Delete(int id);
 
-        public abstract string Update(int id);
+        public abstract string UpdatePriority(int id, Priority newPriority);
+
+        public abstract string UpdateDeadline(int id, DateTime newDeadline);
     }
 }
