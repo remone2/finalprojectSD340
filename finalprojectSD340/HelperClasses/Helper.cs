@@ -5,7 +5,6 @@ namespace finalprojectSD340.HelperClasses
 {
     public abstract class Helper
     {
-        public abstract string Add(int projectId);
 
         public abstract string Delete(int id);
 

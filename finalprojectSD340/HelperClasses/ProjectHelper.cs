@@ -12,7 +12,7 @@ namespace finalprojectSD340.HelperClasses
             _db = db;
         }
 
-        public override string Add(int projectId)
+        public async Task<string> Add(int projectId)
         {
             return "";
         }

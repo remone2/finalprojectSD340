@@ -1,18 +1,21 @@
 ﻿using finalprojectSD340.Models;
 using finalprojectSD340.Data;
+using Microsoft.AspNetCore.Identity;
 
 namespace finalprojectSD340.HelperClasses
 {
     public class TaskHelper : Helper
     {
         private readonly ApplicationDbContext _db;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public TaskHelper(ApplicationDbContext db)
+        public TaskHelper(ApplicationDbContext db, UserManager<ApplicationUser> um)
         {
             _db = db;
+            _userManager = um;
         }
 
-        public override string Add(int projectId)
+        public async Task<string> Add(int projectId)
         {
             return "";
         }
@@ -88,10 +91,10 @@ namespace finalprojectSD340.HelperClasses
             return "Deadline updated.";
         }
 
-        public string Assign(string devIdToAssign, int taskId)
+        public async Task<string> Assign(string devIdToAssign, int taskId)
         {
             Models.Task? taskToAssign = _db.Tasks.FirstOrDefault(t => t.Id == taskId);
-            ApplicationUser? dev = _db.Users.FirstOrDefault(u => u.Id == devIdToAssign);
+            ApplicationUser? dev = await _userManager.FindByIdAsync(devIdToAssign);
 
             if (taskToAssign == null)
                 return "Task does not exist in the database.";
@@ -103,7 +106,7 @@ namespace finalprojectSD340.HelperClasses
             {
                 taskToAssign.DeveloperId = dev.Id;
                 taskToAssign.Developer = dev;
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
             }
             catch (Exception ex)
             {
