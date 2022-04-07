@@ -1,0 +1,81 @@
+﻿@model IEnumerable<finalprojectSD340.Models.Task>
+
+<h2>@ViewBag.Project.Name</h2>
+
+<p>
+     <a asp-controller="PM" asp-action="PMDashboard">Project Manager Dashboard</a> |
+     <a asp-action="">PM Notifications</a>
+</p>
+
+<h4>Project Details</h4>
+
+<p>@ViewBag.Project.Description</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Completed</th>
+            <th>Project Budget</th>
+            <th>Total Cost</th>
+            <th>Project Manager</th>
+            <th>Developers</th>
+            <th>Priority</th>
+            <th>Deadline</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>@ViewBag.Project.IsComplete</td>
+            <td>$@ViewBag.Project.Budget</td>
+            <td>$@ViewBag.Project.ProjectCost</td>  
+            <td>@ViewBag.Project.ProjectManager.UserName</td>
+            <td>@ViewBag.Project.Tasks.Count</td> 
+            <td>@ViewBag.Project.Priority</td>
+            <td>@ViewBag.Project.Deadline</td>
+        </tr>
+
+    </tbody>
+</table>
+
+
+<h4>Tasks</h4>
+
+<p>
+    <a asp-controller="PM" asp-action="PMProjectDetails" asp-route-filter="filter">Hide Completed Tasks</a> |
+    <a asp-controller="PM" asp-action="PMProjectDetails" asp-route-filter="">Show Completed Tasks</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Completed</th>
+            <th>CompletionPercentage</th>
+            <th>Developer</th>
+            <th>Priority</th>
+            <th>Deadline</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>@item.Name</td>
+            <td>@item.Description</td>
+            <td>@item.IsCompleted</td>
+            <td>@item.CompletionPercentage</td>
+            <td>@item.Developer.UserName</td>
+            <td>@item.Priority</td>
+            <td>@item.Deadline</td>
+            <td>
+@*                LINKS FOR:
+                Task Details
+                TaskHelper*@
+                 <a asp-controller="" asp-action="" asp-route-Id="@item.Id">Task Details</a> |
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
