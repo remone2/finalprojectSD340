@@ -1,0 +1,78 @@
+﻿@model IEnumerable<finalprojectSD340.Models.Task>
+
+<h2>@ViewBag.Project.Name</h2>
+
+<p>
+     <a asp-controller="PM" asp-action="PMDashboard">Project Manager Dashboard</a> |
+     <a asp-action="">PM Notifications</a>
+</p>
+
+<h4>Project Details</h4>
+
+<p>@ViewBag.Project.Description</p>
+
+<div>
+    <hr/>
+    <dl class="row">
+        <dt class = "col-sm-2">Name</dt>
+            <dd class = "col-sm-10">@ViewBag.Project.Name</dd>
+
+        <dt class = "col-sm-2">Completed</dt>
+            <dd class = "col-sm-10">@ViewBag.Project.IsComplete</dd>
+
+        <dt class = "col-sm-2">Budget</dt>
+            <dd class = "col-sm-10">$@ViewBag.Project.Budget</dd>
+
+        <dt class = "col-sm-2">ProjectCost</dt>
+            <dd class = "col-sm-10">$@ViewBag.Project.ProjectCost</dd>
+
+        <dt class = "col-sm-2">Priority</dt>
+            <dd class = "col-sm-10">@ViewBag.Project.Priority</dd>
+
+        <dt class = "col-sm-2">Deadline</dt>
+            <dd class = "col-sm-10">@ViewBag.Project.Deadline</dd>
+    </dl>
+</div>
+
+
+<h4>Tasks</h4>
+
+<p>
+    <a asp-controller="" asp-action="" asp-route-filter="">Create New Task</a> |
+    <a asp-controller="PM" asp-action="PMProjectDetails" asp-route-filter="filter">Hide Completed Tasks</a> |
+    <a asp-controller="PM" asp-action="PMProjectDetails" asp-route-filter="">Show Completed Tasks</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Completed</th>
+            <th>CompletionPercentage</th>
+            <th>Developer</th>
+            <th>Priority</th>
+            <th>Deadline</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>@item.Name</td>
+            <td>@item.Description</td>
+            <td>@item.IsCompleted</td>
+            <td>@item.CompletionPercentage</td>
+            <td>@item.Developer.UserName</td>
+            <td>@item.Priority</td>
+            <td>@item.Deadline</td>
+            <td>
+@*                LINKS FOR:
+                Task Details
+                TaskHelper*@
+                 <a asp-controller="Dev" asp-action="CompleteTask" asp-route-Id="@item.Id">Task Details</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
