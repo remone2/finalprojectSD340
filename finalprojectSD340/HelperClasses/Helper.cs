@@ -6,10 +6,10 @@ namespace finalprojectSD340.HelperClasses
     public abstract class Helper
     {
 
-        public abstract string Delete(int id);
+        public abstract Dictionary<int, string> Delete(int id);
 
-        public abstract string UpdatePriority(int id, Priority newPriority);
+        public abstract Dictionary<int, string> UpdatePriority(int id, Priority newPriority);
 
-        public abstract string UpdateDeadline(int id, DateTime newDeadline);
+        public abstract Dictionary<int, string> UpdateDeadline(int id, DateTime newDeadline);
     }
 }

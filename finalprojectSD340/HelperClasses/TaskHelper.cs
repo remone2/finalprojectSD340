@@ -15,12 +15,12 @@ namespace finalprojectSD340.HelperClasses
             _userManager = um;
         }
 
-        public async Task<string> Add(int projectId)
+        public async Task<Dictionary<int, string>> Add(int projectId, string name, string desc)
         {
-            return "";
+            return new Dictionary<int, string>();
         }
 
-        public override string Delete(int id)
+        public override Dictionary<int, string> Delete(int id)
         {
             Models.Task? taskToDelete = _db.Tasks.FirstOrDefault(t => t.Id == id);
 
@@ -33,18 +33,27 @@ namespace finalprojectSD340.HelperClasses
                 }
                 catch (Exception ex)
                 {
-                    return ex.Message;
+                    return new Dictionary<int, string>()
+                    {
+                        { -1, ex.Message },
+                    };
                 }
             }
             else
             {
-                return "Task does not exist in database.";
+                return new Dictionary<int, string>()
+                {
+                    { 0, "Task does not exist in the database." },
+                };
             }
 
-            return "Task successfully deleted.";
+            return new Dictionary<int, string>() 
+            {
+                { 1, "Task successfully deleted." }, 
+            };
         }
 
-        public override string UpdatePriority(int id, Priority newPriority)
+        public override Dictionary<int, string> UpdatePriority(int id, Priority newPriority)
         {
             Models.Task? taskToUpdate = _db.Tasks.FirstOrDefault(t => t.Id == id);
 
@@ -57,18 +66,27 @@ namespace finalprojectSD340.HelperClasses
                 }
                 catch (Exception ex)
                 {
-                    return ex.Message;
+                    return new Dictionary<int, string>()
+                    {
+                        { -1, ex.Message },
+                    };
                 }
             }
             else
             {
-                return "Task does not exist in database.";
+                return new Dictionary<int, string>()
+                {
+                    { 0, "Task does not exist in the database." },
+                };
             }
 
-            return "Priority updated.";
+            return new Dictionary<int, string>()
+            {
+                { 1, "Priority updated." },
+            };
         }
 
-        public override string UpdateDeadline(int id, DateTime newDeadline)
+        public override Dictionary<int, string> UpdateDeadline(int id, DateTime newDeadline)
         {
             Models.Task? taskToUpdate = _db.Tasks.FirstOrDefault(t => t.Id == id);
 
@@ -81,26 +99,41 @@ namespace finalprojectSD340.HelperClasses
                 }
                 catch (Exception ex)
                 {
-                    return ex.Message;
+                    return new Dictionary<int, string>()
+                    {
+                        { -1, ex.Message },
+                    };
                 }
             }
             else
             {
-                return "Task does not exist in database.";
+                return new Dictionary<int, string>()
+                {
+                    { 0, "Task does not exist in the database." },
+                };
             }
-            return "Deadline updated.";
+            return new Dictionary<int, string>()
+            {
+                { 1, "Deadline updated." },
+            };
         }
 
-        public async Task<string> Assign(string devIdToAssign, int taskId)
+        public async Task<Dictionary<int, string>> Assign(string devIdToAssign, int taskId)
         {
             Models.Task? taskToAssign = _db.Tasks.FirstOrDefault(t => t.Id == taskId);
             ApplicationUser? dev = await _userManager.FindByIdAsync(devIdToAssign);
 
             if (taskToAssign == null)
-                return "Task does not exist in the database.";
+                return new Dictionary<int, string>()
+                {
+                    { 0, "Task does not exist in the database." },
+                };
 
             if (dev == null)
-                return "Developer does not exist in the database.";
+                return new Dictionary<int, string>()
+                {
+                    { 0, "Developer does not exist in the database." },
+                };
 
             try
             {
@@ -110,10 +143,16 @@ namespace finalprojectSD340.HelperClasses
             }
             catch (Exception ex)
             {
-                return ex.Message;
+                return new Dictionary<int, string>()
+                {
+                    { -1, ex.Message },
+                };
             }
 
-            return "Developer has been assigned.";
+            return new Dictionary<int, string>()
+            {
+                { 1, "Developer has been assigned." },
+            };
         }
     }
 }
