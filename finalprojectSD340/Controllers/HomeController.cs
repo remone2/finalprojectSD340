@@ -1,7 +1,9 @@
 ﻿using finalprojectSD340.Data;
 using finalprojectSD340.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace finalprojectSD340.Controllers
@@ -23,6 +25,8 @@ namespace finalprojectSD340.Controllers
         {
             return View();
         }
+
+        
 
         public IActionResult Privacy()
         {

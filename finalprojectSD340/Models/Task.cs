@@ -1,4 +1,6 @@
-﻿namespace finalprojectSD340.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace finalprojectSD340.Models
 {
     public class Task
     {
@@ -6,6 +8,7 @@
         public string Name { get; set; }
         public string Description { get; set; }
         public bool IsCompleted { get; set; } = false;
+        [Display(Name = "Completion Percentage")]
         public int CompletionPercentage { get; set; } = 0;
         public int ProjectId { get; set; }
         public Project Project { get; set; }
