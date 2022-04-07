@@ -95,7 +95,7 @@ namespace finalprojectSD340.Controllers
 
                 if (percentInput == 100)
                 {
-                    CompleteTask(taskId);
+                    await CompleteTask(taskId);
                 }
 
                 return RedirectToAction("DeveloperTasks");

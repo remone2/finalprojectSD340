@@ -17,10 +17,7 @@
                 @Html.DisplayNameFor(model => model.Description)
             </th>
             <th>
-                Is Completed?
-            </th>
-            <th>
-                Completion Percentage
+                @Html.DisplayNameFor(model => model.CompletionPercentage)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Project)
@@ -45,19 +42,19 @@
                 @Html.DisplayFor(modelItem => item.Description)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.IsCompleted)
+                <div style="display:flex;flex-flow=row">
+                    @Html.DisplayFor(modelItem => item.CompletionPercentage)
+                    @if (!item.IsCompleted)
+                    {
+                        <form asp-action="TaskPercentage" asp-route-taskId="@item.Id" method="post" style="margin-left:1rem">
+                            <input name="percentInput" id="percentInput" value="@item.CompletionPercentage" type="range" min="0" max="100" step="5" oninput="this.nextElementSibling.value = this.value">
+                            <output style="margin:0 1rem">@item.CompletionPercentage</output>
+                            <button type="submit">Adjust</button>
+                        </form>
+                    }
+                </div>
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CompletionPercentage)
-                @if (!item.IsCompleted)
-                {
-                    <form asp-action="TaskPercentage" asp-route-taskId="@item.Id" method="post">
-                        <input name="percentInput" id="percentInput" type="range" min="0" max="100" oninput="this.nextElementSibling.value = this.value">
-                        <output style="margin:0.5rem">@item.CompletionPercentage</output>
-                        <button type="submit" style="margin:0.5rem">Adjust</button>
-                    </form>
-                }
-            </td>
+
             <td>
                 @Html.DisplayFor(modelItem => item.Project.Name)
             </td>
@@ -75,19 +72,9 @@
                     </form>
                 }
             </td>
-            @*Needs work*@
-            @*<td>
-                @if (item.IsCompleted)
-                {
-                    <form asp-action="MakeComment">
-                        <input type="text" name="comment" />
-                        <button asp-route-taskId="@item.Id" type="submit">Comment</button>
-                    </form>
-                }
-            </td>*@
             <td>
-                    <a asp-action="TaskView" asp-route-taskId="@item.Id">View Task</a>
-                </td>
+                <a asp-action="TaskView" asp-route-taskId="@item.Id">View Task</a>
+            </td>
         </tr>
 }
     </tbody>
