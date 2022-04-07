@@ -15,9 +15,58 @@ namespace finalprojectSD340.HelperClasses
             _userManager = um;
         }
 
-        public async Task<Dictionary<int, string>> Add(int projectId, string name, string desc)
+        public async Task<Dictionary<int, string>> Add(int projectId, string name, string desc, string? developerId, Priority priority, DateTime deadline)
         {
-            return new Dictionary<int, string>();
+            if (name == null)
+            {
+                return new Dictionary<int, string>()
+                {
+                    { 0, "Insufficient data." },
+                };
+            }
+
+            ApplicationUser? dev = null;
+            Project project = _db.Projects.First(p => p.Id == projectId);
+
+            if (developerId != null)
+            {
+                dev = await _userManager.FindByIdAsync(developerId);
+            }
+
+            try
+            {
+                Models.Task newTask = new Models.Task()
+                {
+                    Name = name,
+                    Description = desc,
+                    ProjectId = projectId,
+                    Project = project,
+                    DeveloperId = developerId,
+                    Developer = dev,
+                    Priority = priority,
+                    Deadline = deadline,
+                };
+
+                await _db.AddAsync(newTask);
+                if (dev != null)
+                {
+                    dev.Tasks.Add(newTask);
+                }
+                project.Tasks.Add(newTask);
+                await _db.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                return new Dictionary<int, string>()
+                {
+                    { -1, ex.Message },
+                };
+            }
+
+            return new Dictionary<int, string>()
+            {
+                { 1, "Task successfully created." },
+            };
         }
 
         public override Dictionary<int, string> Delete(int id)
