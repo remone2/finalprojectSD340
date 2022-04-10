@@ -159,5 +159,25 @@ namespace finalprojectSD340.Controllers
 
             return View();
         }
+
+        [Authorize(Roles = "Project Manager")]
+        public IActionResult PMEditProject(int projectId)
+        {
+            Project? project = _db.Projects.FirstOrDefault(p => p.Id == projectId);
+
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            return View(project);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PMEditProject(string name, string desc, double budget, Priority priority, DateTime deadline)
+        {
+            Console.WriteLine($"{name}, {desc}, {budget}, {priority}, {deadline.Date}");
+            return RedirectToAction("PMDashboard");
+        }
     }
 }

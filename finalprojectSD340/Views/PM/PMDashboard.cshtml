@@ -56,7 +56,7 @@
                  <a asp-controller="PM" asp-action="PMProjectDetails" asp-route-Id="@item.Id">Project Details</a> |
  @*              LINK FOR 
                  Project Helper*@
-                 <a asp-controller="" asp-action="" asp-route-Id="@item.Id">Edit Project</a>
+                 <a asp-controller="PM" asp-action="PMEditProject" asp-route-projectId="@item.Id">Edit Project</a>
             </td>
         </tr>
 }
