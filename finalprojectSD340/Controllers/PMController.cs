@@ -1,5 +1,6 @@
 ﻿using finalprojectSD340.Data;
 using finalprojectSD340.Models;
+using finalprojectSD340.HelperClasses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,12 +14,14 @@ namespace finalprojectSD340.Controllers
         public ApplicationDbContext _db;
         private UserManager<ApplicationUser> _userManager;
         private RoleManager<IdentityRole> _roleManager;
+        private ProjectHelper _projectHelper;
 
         public PMController(ApplicationDbContext Db, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _db = Db;
             _userManager = userManager;
             _roleManager = roleManager;
+            _projectHelper = new ProjectHelper(Db, userManager);
         }
 
 
@@ -39,7 +42,7 @@ namespace finalprojectSD340.Controllers
             catch
             {
                 return NotFound();
-            } 
+            }
         }
 
 
@@ -125,9 +128,36 @@ namespace finalprojectSD340.Controllers
             }
         }
 
+        [Authorize(Roles = "Project Manager")]
+        public IActionResult PMCreateProject()
+        {
+            return View();
+        }
 
+        [HttpPost]
+        public async Task<IActionResult> PMCreateProject(string name, string desc, double budget, Priority priority, DateTime deadline)
+        {
+            string userName = User.Identity.Name;
+            ApplicationUser? pm = await _userManager.FindByEmailAsync(userName);
 
+            if (pm == null)
+            {
+                return NotFound();
+            }
 
+            Dictionary<int, string> resultDict = await _projectHelper.Add(name, desc, budget, pm.Id, priority, deadline);
+            KeyValuePair<int, string> result = resultDict.First();
 
+            if (result.Key == -1)
+            {
+                return NotFound(result.Value);
+            }
+            else if (result.Key == 0)
+            {
+                return BadRequest(result.Value);
+            }
+
+            return View();
+        }
     }
 }
