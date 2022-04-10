@@ -174,9 +174,20 @@ namespace finalprojectSD340.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PMEditProject(string name, string desc, double budget, Priority priority, DateTime deadline)
+        public async Task<IActionResult> PMEditProject(int projectId, string name, string desc, double budget, Priority priority, DateTime deadline)
         {
-            Console.WriteLine($"{name}, {desc}, {budget}, {priority}, {deadline.Date}");
+            Dictionary<int, string> resultDict = _projectHelper.Update(projectId, name, desc, budget, priority, deadline);
+            KeyValuePair<int, string> result = resultDict.First();
+
+            if (result.Key == -1)
+            {
+                return NotFound(result.Value);
+            }
+            else if (result.Key == 0)
+            {
+                return BadRequest(result.Value);
+            }
+
             return RedirectToAction("PMDashboard");
         }
     }

@@ -137,6 +137,8 @@ namespace finalprojectSD340.HelperClasses
                 {
                     projectToUpdate.Deadline = deadline;
                 }
+
+                _db.SaveChanges();
             }
             catch (Exception ex)
             {
