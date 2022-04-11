@@ -218,7 +218,7 @@ namespace finalprojectSD340.Controllers
                 return BadRequest(result.Value);
             }
 
-            return View();
+            return RedirectToAction("PMDashboard");
         }
 
         [Authorize(Roles = "Project Manager")]
@@ -249,7 +249,7 @@ namespace finalprojectSD340.Controllers
                 return BadRequest(result.Value);
             }
 
-            return RedirectToAction("PMDashboard");
+            return RedirectToAction("PMProjectDetails", new { id = projectId, message = result.Value });
         }
         
         public async Task<IActionResult> PMAddTask()
