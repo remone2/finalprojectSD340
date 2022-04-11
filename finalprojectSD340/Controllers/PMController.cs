@@ -53,11 +53,12 @@ namespace finalprojectSD340.Controllers
 
 
         [Authorize(Roles="Project Manager")]
-        public IActionResult PMProjectDetails(int? id, string? filter)
+        public IActionResult PMProjectDetails(int? id, string? filter, string? message)
         {
             try
             {
                 ViewBag.Project = _db.Projects.Where(p => p.Id == id).First();
+                ViewBag.Message = message;
 
                 var Tasks = _db.Tasks.Where(t => t.ProjectId == id)
                                            .Include(t => t.Developer)
@@ -288,6 +289,31 @@ namespace finalprojectSD340.Controllers
                 return BadRequest(result.Value);
             ViewBag.Message = result.Value;
             return View();
+        }
+
+        public IActionResult PMUpdateTask(int taskId)
+        {
+            Models.Task? task = _db.Tasks.FirstOrDefault(t => t.Id == taskId);          
+
+            if (task == null)
+            {
+                return NotFound();
+            }
+
+            return View(task);
+        }
+
+        [HttpPost]
+        public IActionResult PMUpdateTask(int id, string name, string desc, double budget, Priority priority, DateTime deadline)
+        {
+            Models.Task task = _db.Tasks.Include(p => p.Project).First(t => t.Id == id);
+            Dictionary<int, string> taskDict = _th.Update(id, name, desc, budget, priority, deadline);
+            KeyValuePair<int, string> result = taskDict.First();
+            if (result.Key == -1)
+                return NotFound(result.Value);
+            else if (result.Key == 0)
+                return BadRequest(result.Value);
+            return RedirectToAction("PMProjectDetails", new { id = task.ProjectId, message = result.Value });
         }
     }
 }
