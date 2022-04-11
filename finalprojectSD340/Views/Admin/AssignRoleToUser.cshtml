@@ -1,0 +1,13 @@
+﻿<h1>Assign A Role To A User</h1>
+
+<p>
+     <a asp-controller="Admin" asp-action="AdminDashboard">Admin Dashboard</a>
+</p>
+
+<form asp-controller="Admin" asp-action="AssignRoleToUser" method="post">
+    <select asp-items="@ViewBag.Users" name="userId"></select>
+    <select asp-items="@ViewBag.Roles" name="roleId"></select>
+    <button type="submit">Submit</button>
+</form>
+
+<h2>@ViewBag.Message</h2>

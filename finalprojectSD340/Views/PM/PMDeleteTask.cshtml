@@ -1,0 +1,78 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    @model List<finalprojectSD340.Models.Task>
+}
+
+<h1>Select Task to Delete</h1>
+
+<p>
+     <a asp-controller="PM" asp-action="PMDashboard">Project Manager Dashboard</a> |
+     <a asp-action="PMNotifications">PM Notifications</a>
+</p>
+
+@if (Model != null)
+{
+    <table class="table">
+    <thead>
+        <tr>
+            <th>
+                Task
+            </th>
+            <th>
+                Completion
+            </th>
+            <th>
+                Project
+            </th>
+            <th>
+                Priority
+            </th>
+            <th>
+                Deadline
+            </th>
+            <th>
+                Developer
+            </th>
+            <th>
+                Delete
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @item.Name
+            </td>
+            <td>
+                @item.CompletionPercentage
+            </td>                       
+            <td>
+                @item.Project.Name
+            </td>
+            <td>
+                @item.Priority
+            </td>
+            <td>
+                @item.Deadline
+            </td>
+            <td>
+                @item.Developer
+            </td>
+            <td>
+                <form asp-controller="PM" asp-action="PMDeletTask" method="post">
+                    <button type="submit" asp-route-taskId="@item.Id">Delete</button>
+                </form>
+            </td>
+        </tr>
+}   
+    </tbody>
+</table>
+}
+
+<br />
+
+<p>@ViewBag.Message</p>
+

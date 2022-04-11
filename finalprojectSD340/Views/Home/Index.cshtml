@@ -1,8 +1,26 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
+    @model List<bool>
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
+
+@if (Model != null)
+{
+    @if (Model[0] == true) //dev
+{
+    <p><a asp-controller="Dev" asp-action="DeveloperDashboard">Developer Dashboard</a></p>       
+}
+
+@if (Model[2] == true) //pm
+{
+    <p><a asp-controller="PM" asp-action="PMDashboard">Project Manager Dashboard</a></p>      
+}
+
+@if (Model[1] == true) //admin
+{
+    <p><a asp-controller="Admin" asp-action="AdminDashboard">Admin Dashboard</a></p>        
+} 
+}

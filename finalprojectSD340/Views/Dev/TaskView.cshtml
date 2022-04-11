@@ -1,0 +1,106 @@
+﻿@model finalprojectSD340.Models.Task
+
+@{
+    ViewData["Title"] = "TaskView";
+}
+
+<h1>View Task</h1>
+
+<a asp-action="DeveloperTasks">Back</a>
+
+@if (Model.IsCompleted)
+{
+    <h3 style="color:green">Complete!</h3>
+}
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.CompletionPercentage)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CompletionPercentage)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Project)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Project.Name)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Developer)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Developer.Email)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Priority)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Priority)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Deadline)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Deadline)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="DeveloperTasks">Back to List</a>
+</div>
+@if (!Model.IsCompleted)
+{
+    <div>
+        <h5>Send Urgent Note</h5>
+        <form asp-action="MakeComment" asp-route-taskId="@Model.Id" asp-route-urgent="true" method="post">
+            <textarea name="comment" style="width:400px;height:100px"></textarea>
+            <br>
+            <button type="submit">Send</button>
+        </form>
+    </div>
+}
+else
+{
+    <div style="margin-top:2rem">
+        <h5>Leave A Comment</h5>
+        <form asp-action="MakeComment" asp-route-taskId="@Model.Id" method="post">
+            <textarea name="comment" style="width:400px;height:100px"></textarea>
+            <br>
+            <button type="submit">Post</button>
+        </form>
+    </div>
+
+    <hr />
+
+    <div style="width:50%;margin:0 auto; margin-top:5rem">
+        <h3>Comments:</h3>
+        @foreach(var i in Model.Comments)
+        {
+            <div style="border:1px solid lightgray;border-inline:hidden;margin-bottom:3.5rem;background:linear-gradient(to right, rgb(255,255,255), rgb(240,240,240), rgb(255,255,255))">
+                @if (i.Developer != null)
+                {
+                    <h6>User: @i.Developer.Email</h6>
+                }               
+                <p style="color:lightgrey; font-size:0.8rem; margin-bottom:0.5rem;">Post Date: @i.DateCreated.ToShortDateString()</p>
+                <div style="border:1px solid lightgrey; border-radius:8px; padding:1rem; width:80%; margin:0 auto 2rem; background:white;">
+                    <p style="margin-bottom:2rem">@i.Body</p>
+                </div>
+            </div>
+        }
+    </div>
+}

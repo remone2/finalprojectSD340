@@ -1,0 +1,103 @@
+﻿@model IEnumerable<finalprojectSD340.Models.Task>
+
+<h2>@ViewBag.Project.Name</h2>
+
+<p>
+     <a asp-controller="PM" asp-action="PMDashboard">Project Manager Dashboard</a> |
+     <a asp-action="PMNotifications">PM Notifications</a>
+     <form asp-controller="PM" asp-action="PMDeleteProject">
+         <input type="hidden" name="projectId" value="@ViewBag.Project.Id"/>
+         <button type="submit">Delete Project</button>
+     </form>
+</p>
+
+<h4>Project Details</h4>
+
+<p>@ViewBag.Project.Description</p>
+
+<div>
+    <hr/>
+    <dl class="row">
+        <dt class = "col-sm-2">Name</dt>
+            <dd class = "col-sm-10">@ViewBag.Project.Name</dd>
+
+        <dt class = "col-sm-2">Completed</dt>
+            <dd class = "col-sm-10">@ViewBag.Project.IsComplete</dd>
+
+        <dt class = "col-sm-2">Budget</dt>
+            <dd class = "col-sm-10">$@ViewBag.Project.Budget</dd>
+
+        <dt class = "col-sm-2">ProjectCost</dt>
+            <dd class = "col-sm-10">$@ViewBag.Project.ProjectCost</dd>
+
+        <dt class = "col-sm-2">Priority</dt>
+            <dd class = "col-sm-10">@ViewBag.Project.Priority</dd>
+
+        <dt class = "col-sm-2">Deadline</dt>
+            <dd class = "col-sm-10">@ViewBag.Project.Deadline</dd>
+    </dl>
+</div>
+
+<form method="post" asp-controller="PM" asp-action="CompleteProject" asp-route-id=@ViewBag.Project.Id>
+    <button type="submit">
+        Complete Project
+    </button>
+</form>
+<p style="color:red">@ViewBag.ErrorMessage</p>
+
+<h4>Tasks</h4>
+
+<p>
+    <a asp-controller="PM" asp-action="PMAddTask" asp-route-projectId="@ViewBag.Project.Id" asp-route-filter="">Create New Task</a> |
+    <a asp-controller="PM" asp-action="PMProjectDetails" asp-route-filter="filter">Hide Completed Tasks</a> |
+    <a asp-controller="PM" asp-action="PMProjectDetails" asp-route-filter="">Show Completed Tasks</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Completed</th>
+            <th>CompletionPercentage</th>
+            <th>Developer</th>
+            <th>Priority</th>
+            <th>Deadline</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>@item.Name</td>
+            <td>@item.Description</td>
+            <td>@item.IsCompleted</td>
+            <td>@item.CompletionPercentage</td>
+            <td>
+                @if (item.Developer != null)
+                    @item.Developer.UserName
+            </td>
+            <td>@item.Priority</td>
+            <td>@item.Deadline</td>
+            <td>
+@*                LINKS FOR:
+                Task Details
+                TaskHelper*@
+
+                 <form method="post" asp-controller="Dev" asp-action="CompleteTask" asp-route-taskId=@item.Id>
+                    <button type="submit">
+                        Complete Task
+                    </button>
+                </form>
+
+                 <a asp-controller="PM" asp-action="PMUpdateTask" asp-route-taskId="@item.Id">Update Task</a>
+                 <a asp-controller="PM" asp-action="PMAssignTask" asp-route-taskId="@item.Id">Assign Task</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+<br />
+
+<p style="color:red">@ViewBag.Message</p>

@@ -1,0 +1,66 @@
+﻿@model IEnumerable<finalprojectSD340.Models.Project>
+
+<h2>Project Manager Dashboard</h2>
+
+<p>
+     <a asp-controller="PM" asp-action="PMDashboard">Project Manager Dashboard</a> |
+     <a asp-action="PMNotifications">PM Notifications</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+
+            <th>Project Name</th>
+            <th>Description</th>
+            <th>Completed</th>
+            <th>Project Budget</th>
+            <th>Total Cost</th>
+            <th>Project Manager</th>
+            <th>Developers</th>
+            <th>Tasks</th>
+            <th>Priority</th>
+            <th>Deadline</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+    @if(item.ProjectCost > item.Budget)
+            {
+           <tr>
+            <td>@item.Name</td>
+            <td>@item.Description</td>
+            <td>@item.IsComplete</td>
+            <td>$@item.Budget</td>
+
+                @if(item.IsComplete == true)
+                {
+                    <td>$@item.ProjectCost</td>  
+                }
+                else
+                {<td>x</td>}
+
+            <td>@item.ProjectManager.UserName</td>
+            <td>
+                 @foreach(var t in item.Tasks)
+                 {
+                     @if (t.Developer != null)
+                        @t.Developer.UserName       
+                 }
+            </td>
+            <td>@item.Tasks.Count</td> 
+            <td>@item.Priority</td>
+            <td>@item.Deadline</td>
+            <td>
+                 <a asp-controller="PM" asp-action="PMProjectDetails" asp-route-Id="@item.Id">Project Details</a> |
+ @*              LINK FOR 
+                 Project Helper*@
+                 <a asp-controller="" asp-action="" asp-route-Id="@item.Id">Edit Project</a>
+            </td>
+           </tr>
+                
+            }
+}
+    </tbody>
+</table>

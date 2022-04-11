@@ -1,0 +1,35 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    @model finalprojectSD340.Models.Task
+}
+
+<h1>Update Task Details</h1>
+
+<p>
+     <a asp-controller="PM" asp-action="PMProjectDetails" asp-route-id="@Model.ProjectId">Project Details</a> |
+     <a asp-action="PMNotifications">PM Notifications</a>
+</p>
+
+<form asp-controller="PM" asp-action="PMUpdateTask" method="post">
+    <input type="hidden" name="id" value="@Model.Id"/>
+    <label>Project Name</label>
+    <br/>
+    <input type="text" name="name" required="required" value="@Model.Name"/>
+    <br/>
+    <label style="margin-top:5px;">Project Description</label>
+    <br/>
+    <textarea rows="10" cols="30" name="desc">@Model.Description</textarea>
+    <br/>
+    <label style="margin-top:5px;">Priority</label>
+    <br/>
+    <select name="priority" asp-items="@Html.GetEnumSelectList<Priority>()">
+    </select>
+    <br/>
+    <label style="margin-top:5px;">Deadline</label>
+    <br/>
+    <input type="date" name="deadline" min="@DateTime.Now.Date.ToString("d")" value="@Model.Deadline.Date.ToString("d")"/>
+    <br/>
+    <button style="margin-top:10px;" type="submit">Save Changes</button>
+</form>

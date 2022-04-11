@@ -1,0 +1,128 @@
+﻿@model IEnumerable<finalprojectSD340.Models.Notification>
+
+@{
+    ViewData["Title"] = "DeveloperNotifications";
+}
+
+<h1>Notifications</h1>
+
+<a asp-action="DeveloperDashboard">Back</a>
+
+@if (ViewBag.Any == 1)
+{
+    <div>
+        <h4>You have no notifications</h4>
+    </div>
+}
+
+<h3>Unopened</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Type
+            </th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) {
+            <tr>
+                <td>
+                    @item.Type - @item.NotificationDate.Date
+                </td>
+                <td></td>
+                <td></td>                
+                <td>
+                    <button type="button" type="submit" class="collapsible">View Notification</button>
+                    <div class="content">
+                        <p>Title: @item.Title</p>
+                        <p>Content: @item.Body</p>
+                        <p>Project: @item.Project.Name</p>
+                    </div>
+                </td>
+                <td>
+                    <form asp-action="OpenNotification" asp-route-id="@item.Id" method="post">
+                        <button type="submit">Mark as Opened</button>
+                    </form> 
+                    <hr>
+                    <form asp-action="DeleteNotification" asp-route-notificationId="@item.Id" method="post">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h3>Opened</h3>
+
+<p>
+    <a asp-controller="Dev" asp-action="DeveloperDashboard">Developer Dashboard</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Project
+            </th>
+            <th>
+                Type
+            </th>
+            <th>
+                Date
+            </th>
+            <th>
+                Title
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in ViewBag.OpenedNotifications) {
+            <tr>
+                <td>
+                    @item.Project.Name
+                </td>
+                <td>
+                    @item.Type - @item.NotificationDate.Date
+                </td>
+                <td>
+                    @item.NotificationDate.Date
+                </td>
+                <td>
+                    @item.Title
+                </td>
+                <td>
+                    @item.Body
+                </td>
+                <td>
+                    <form asp-action="DeleteNotification" asp-route-notificationId="@item.Id" method="post">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
+
+    for (i = 0; i < coll.length; i++) {
+      coll[i].addEventListener("click", function() {
+        this.classList.toggle("active");
+        var content = this.nextElementSibling;
+        if (content.style.maxHeight){
+          content.style.maxHeight = null;
+        } else {
+          content.style.maxHeight = content.scrollHeight + "px";
+        } 
+      });
+    }
+</script>

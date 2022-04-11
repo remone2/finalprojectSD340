@@ -1,0 +1,27 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<h1>Assign Task to a Developer</h1>
+
+<p>
+     <a asp-controller="PM" asp-action="PMProjectDetails" asp-route-id="@ViewBag.ProjectId">Project Details</a> |
+     <a asp-action="PMNotifications">PM Notifications</a>
+</p>
+
+<form asp-controller="PM" asp-action="PMAssignTask" method="post">
+    <input type="hidden" name="taskId" value="@ViewBag.TaskId"/>
+    <label>Task Name @ViewBag.Task.Name</label>
+    <br />
+    <br />   
+    <select asp-items="@ViewBag.Developers" name="devId"></select>
+    <br />
+    <br />  
+    <button type="submit">Submit</button>
+</form>
+
+<br />
+
+<p>@ViewBag.Message</p>

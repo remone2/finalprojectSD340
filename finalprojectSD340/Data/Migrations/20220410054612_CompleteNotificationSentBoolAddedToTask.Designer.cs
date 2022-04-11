@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using finalprojectSD340.Data;
 
@@ -11,9 +12,10 @@ using finalprojectSD340.Data;
 namespace finalprojectSD340.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220410054612_CompleteNotificationSentBoolAddedToTask")]
+    partial class CompleteNotificationSentBoolAddedToTask
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -226,10 +228,6 @@ namespace finalprojectSD340.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-
-                    b.Property<DateTime>("CompleteDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<bool>("CompleteNotificationSent")
                         .HasColumnType("bit");
 
@@ -262,16 +260,8 @@ namespace finalprojectSD340.Data.Migrations
                     b.Property<int>("ProjectId")
                         .HasColumnType("int");
 
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<double>("TaskCost")
-                        .HasColumnType("float");
-
                     b.Property<bool>("ReminderSent")
                         .HasColumnType("bit");
-
 
                     b.HasKey("Id");
 

@@ -1,0 +1,32 @@
+﻿<h1 style="text-align:center;">Create New Project</h1>
+
+<p>
+     <a asp-controller="PM" asp-action="PMDashboard">Project Manager Dashboard</a> |
+     <a asp-controller="PM" asp-action="PMNotifications">PM Notifications</a>
+</p>
+
+<hr/>
+
+<form asp-controller="PM" asp-action="PMCreateProject" method="post">
+    <label>Project Name</label>
+    <br/>
+    <input type="text" name="name" required="required"/>
+    <br/>
+    <label style="margin-top:5px;">Project Description</label>
+    <br/>
+    <textarea rows="10" cols="30" name="desc"></textarea>
+    <br/>
+    <label style="margin-top:5px;">Budget</label>
+    <br/>
+    <input type="number" min="0" name="budget" required="required"/>
+    <br/>
+    <label style="margin-top:5px;">Priority</label>
+    <br/>
+    <select name="priority" asp-items="@Html.GetEnumSelectList<Priority>()"></select>
+    <br/>
+    <label style="margin-top:5px;">Deadline</label>
+    <br/>
+    <input type="date" name="deadline" min="@DateTime.Now.Date.ToString("d")"/>
+    <br/>
+    <button style="margin-top:10px;" type="submit">Create</button>
+</form>

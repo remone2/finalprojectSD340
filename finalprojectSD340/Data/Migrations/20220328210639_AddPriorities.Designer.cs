@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using finalprojectSD340.Data;
 
@@ -11,9 +12,10 @@ using finalprojectSD340.Data;
 namespace finalprojectSD340.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220328210639_AddPriorities")]
+    partial class AddPriorities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -132,6 +134,9 @@ namespace finalprojectSD340.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Body")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -155,13 +160,9 @@ namespace finalprojectSD340.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("CommentId")
                         .IsUnique()
@@ -170,8 +171,6 @@ namespace finalprojectSD340.Data.Migrations
                     b.HasIndex("ProjectId");
 
                     b.HasIndex("TaskId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Notifications");
                 });
@@ -186,9 +185,6 @@ namespace finalprojectSD340.Data.Migrations
 
                     b.Property<double>("Budget")
                         .HasColumnType("float");
-
-                    b.Property<DateTime>("Deadline")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -226,21 +222,8 @@ namespace finalprojectSD340.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-
-                    b.Property<DateTime>("CompleteDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("CompleteNotificationSent")
-                        .HasColumnType("bit");
-
                     b.Property<int>("CompletionPercentage")
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("Deadline")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("DeadlineNotificationSent")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -261,17 +244,6 @@ namespace finalprojectSD340.Data.Migrations
 
                     b.Property<int>("ProjectId")
                         .HasColumnType("int");
-
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<double>("TaskCost")
-                        .HasColumnType("float");
-
-                    b.Property<bool>("ReminderSent")
-                        .HasColumnType("bit");
-
 
                     b.HasKey("Id");
 
@@ -438,6 +410,10 @@ namespace finalprojectSD340.Data.Migrations
 
             modelBuilder.Entity("finalprojectSD340.Models.Notification", b =>
                 {
+                    b.HasOne("finalprojectSD340.Models.ApplicationUser", null)
+                        .WithMany("Notifications")
+                        .HasForeignKey("ApplicationUserId");
+
                     b.HasOne("finalprojectSD340.Models.Comment", "Comment")
                         .WithOne("Notification")
                         .HasForeignKey("finalprojectSD340.Models.Notification", "CommentId");
@@ -452,17 +428,11 @@ namespace finalprojectSD340.Data.Migrations
                         .WithMany("Notifications")
                         .HasForeignKey("TaskId");
 
-                    b.HasOne("finalprojectSD340.Models.ApplicationUser", "User")
-                        .WithMany("Notifications")
-                        .HasForeignKey("UserId");
-
                     b.Navigation("Comment");
 
                     b.Navigation("Project");
 
                     b.Navigation("Task");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("finalprojectSD340.Models.Project", b =>

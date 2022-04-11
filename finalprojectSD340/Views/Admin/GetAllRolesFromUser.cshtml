@@ -1,0 +1,36 @@
+﻿@model IList<string>;
+
+<h1>All Roles A User Has</h1>
+
+<p>
+     <a asp-controller="Admin" asp-action="AdminDashboard">Admin Dashboard</a>
+</p>
+
+<form asp-controller="Admin" asp-action="GetAllRolesFromUser">
+    <select asp-items="@ViewBag.Users" name="id"></select>
+    <button type="submit">Submit</button>
+</form>
+
+<h2>@ViewBag.User</h2>
+
+@if (Model != null)
+{
+    <table class="table">
+    <thead>
+        <tr>
+            <th>
+                Roles
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @item
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+}

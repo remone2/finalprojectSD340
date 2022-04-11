@@ -1,0 +1,42 @@
+﻿@model IEnumerable<finalprojectSD340.Models.Task>
+
+<h2>All Open Tasks</h2>
+<p>
+    <a asp-controller="PM" asp-action="PMDashboard">Project Manager Dashboard</a> |
+     <a asp-action="PMNotifications">PM Notifications</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Task Name</th>
+            <th>Completed</th>
+            <th>CompletionPercentage</th>
+            <th>Project</th>
+            <th>Developer</th>
+            <th>Priority</th>
+            <th>Deadline</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+    @if(item.IsCompleted != true)
+    {
+        <tr>
+            <td>@item.Name</td>
+            <td>@item.IsCompleted</td>
+            <td>@item.CompletionPercentage</td>
+            <td>@item.Project.Name</td>
+            <td>
+                @if (item.Developer != null)
+                    @item.Developer.UserName
+            </td>
+            <td>@item.Priority</td>
+            <td>@item.Deadline</td>
+        </tr>
+    }
+}
+    </tbody>
+</table>
+
