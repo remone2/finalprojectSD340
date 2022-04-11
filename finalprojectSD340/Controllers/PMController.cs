@@ -309,6 +309,24 @@ namespace finalprojectSD340.Controllers
             return View(_db.Tasks.Include(p => p.Project).Include(d => d.Developer).ToList());
         }
 
+        [HttpPost]
+        public IActionResult PMDeleteProject(int projectId)
+        {
+            Dictionary<int, string> resultDict = _projectHelper.Delete(projectId);
+            KeyValuePair<int, string> result = resultDict.First();
+
+            if (result.Key == -1)
+            {
+                return NotFound(result.Value);
+            }
+            else if (result.Key == 0)
+            {
+                return BadRequest(result.Value);
+            }
+
+            return RedirectToAction("PMDashboard");
+        }
+
         public async Task<IActionResult> PMAssignTask()
         {
             List<ApplicationUser> developers = new List<ApplicationUser>();

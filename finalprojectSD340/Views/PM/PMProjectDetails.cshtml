@@ -5,6 +5,10 @@
 <p>
      <a asp-controller="PM" asp-action="PMDashboard">Project Manager Dashboard</a> |
      <a asp-action="">PM Notifications</a>
+     <form asp-controller="PM" asp-action="PMDeleteProject">
+         <input type="hidden" name="projectId" value="@ViewBag.Project.Id"/>
+         <button type="submit">Delete Project</button>
+     </form>
 </p>
 
 <h4>Project Details</h4>
