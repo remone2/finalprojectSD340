@@ -85,6 +85,7 @@ namespace finalprojectSD340.Controllers
             }
         }
 
+        [Authorize(Roles = "Developer, Project Manager, Admin")]
         [HttpPost]
         public async Task<IActionResult> CompleteTask(int taskId)
         {
@@ -127,6 +128,7 @@ namespace finalprojectSD340.Controllers
             }
         }
 
+        [Authorize(Roles = "Developer, Project Manager, Admin")]
         [HttpPost]
         public async Task<IActionResult> TaskPercentage(int percentInput, int taskId)
         {
