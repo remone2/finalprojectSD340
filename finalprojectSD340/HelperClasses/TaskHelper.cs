@@ -102,26 +102,11 @@ namespace finalprojectSD340.HelperClasses
             };
         }
 
-        public override Dictionary<int, string> UpdatePriority(int id, Priority newPriority)
+        public override Dictionary<int, string> Update(int id, string name, string desc, double budget, Priority priority, DateTime deadline)
         {
             Models.Task? taskToUpdate = _db.Tasks.FirstOrDefault(t => t.Id == id);
 
-            if (taskToUpdate != null)
-            {
-                try
-                {
-                    taskToUpdate.Priority = newPriority;
-                    _db.SaveChanges();
-                }
-                catch (Exception ex)
-                {
-                    return new Dictionary<int, string>()
-                    {
-                        { -1, ex.Message },
-                    };
-                }
-            }
-            else
+            if (taskToUpdate == null)
             {
                 return new Dictionary<int, string>()
                 {
@@ -129,41 +114,41 @@ namespace finalprojectSD340.HelperClasses
                 };
             }
 
-            return new Dictionary<int, string>()
+            try
             {
-                { 1, "Priority updated." },
-            };
-        }
-
-        public override Dictionary<int, string> UpdateDeadline(int id, DateTime newDeadline)
-        {
-            Models.Task? taskToUpdate = _db.Tasks.FirstOrDefault(t => t.Id == id);
-
-            if (taskToUpdate != null)
-            {
-                try
+                if (taskToUpdate.Name != name)
                 {
-                    taskToUpdate.Deadline = newDeadline;
-                    _db.SaveChanges();
+                    taskToUpdate.Name = name;
                 }
-                catch (Exception ex)
+
+                if (taskToUpdate.Description != desc)
                 {
-                    return new Dictionary<int, string>()
-                    {
-                        { -1, ex.Message },
-                    };
+                    taskToUpdate.Description = desc;
                 }
+
+                if (taskToUpdate.Priority != priority)
+                {
+                    taskToUpdate.Priority = priority;
+                }
+
+                if (taskToUpdate.Deadline != deadline)
+                {
+                    taskToUpdate.Deadline = deadline;
+                }
+
+                _db.SaveChanges();
             }
-            else
+            catch (Exception ex)
             {
                 return new Dictionary<int, string>()
                 {
-                    { 0, "Task does not exist in the database." },
+                    { -1, ex.Message },
                 };
             }
+
             return new Dictionary<int, string>()
             {
-                { 1, "Deadline updated." },
+                { 1, "Task successfully updated." },
             };
         }
 

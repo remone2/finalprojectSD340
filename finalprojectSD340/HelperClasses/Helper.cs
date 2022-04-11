@@ -8,8 +8,6 @@ namespace finalprojectSD340.HelperClasses
 
         public abstract Dictionary<int, string> Delete(int id);
 
-        public abstract Dictionary<int, string> UpdatePriority(int id, Priority newPriority);
-
-        public abstract Dictionary<int, string> UpdateDeadline(int id, DateTime newDeadline);
+        public abstract Dictionary<int, string> Update(int id, string name, string desc, double budget, Priority priority, DateTime deadline);
     }
 }

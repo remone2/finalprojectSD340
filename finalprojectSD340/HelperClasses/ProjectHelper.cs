@@ -99,26 +99,11 @@ namespace finalprojectSD340.HelperClasses
             };
         }
 
-        public override Dictionary<int, string> UpdatePriority(int id, Priority newPriority)
+        public override Dictionary<int, string> Update(int id, string name, string desc, double budget, Priority priority, DateTime deadline)
         {
             Project? projectToUpdate = _db.Projects.FirstOrDefault(p => p.Id == id);
 
-            if (projectToUpdate != null)
-            {
-                try
-                {
-                    projectToUpdate.Priority = newPriority;
-                    _db.SaveChanges();
-                }
-                catch (Exception ex)
-                {
-                    return new Dictionary<int, string>()
-                    {
-                        { -1, ex.Message },
-                    };
-                }
-            }
-            else
+            if (projectToUpdate == null)
             {
                 return new Dictionary<int, string>()
                 {
@@ -126,42 +111,46 @@ namespace finalprojectSD340.HelperClasses
                 };
             }
 
-            return new Dictionary<int, string>()
+            try
             {
-                { 1, "Priority updated." },
-            };
-        }
-
-        public override Dictionary<int, string> UpdateDeadline(int id, DateTime newDeadline)
-        {
-            Project? projectToUpdate = _db.Projects.FirstOrDefault(p => p.Id == id);
-
-            if (projectToUpdate != null)
-            {
-                try
+                if (projectToUpdate.Name != name)
                 {
-                    projectToUpdate.Deadline = newDeadline;
-                    _db.SaveChanges();
+                    projectToUpdate.Name = name;
                 }
-                catch (Exception ex)
+
+                if (projectToUpdate.Description != desc)
                 {
-                    return new Dictionary<int, string>()
-                    {
-                        { -1, ex.Message },
-                    };
+                    projectToUpdate.Description = desc;
                 }
+
+                if (projectToUpdate.Budget != budget)
+                {
+                    projectToUpdate.Budget = budget;
+                }
+
+                if (projectToUpdate.Priority != priority)
+                {
+                    projectToUpdate.Priority = priority;
+                }
+                
+                if (projectToUpdate.Deadline != deadline)
+                {
+                    projectToUpdate.Deadline = deadline;
+                }
+
+                _db.SaveChanges();
             }
-            else
+            catch (Exception ex)
             {
                 return new Dictionary<int, string>()
                 {
-                    { 0, "Project does not exist in the database." },
+                    { -1, ex.Message },
                 };
             }
 
             return new Dictionary<int, string>()
             {
-                { 1, "Deadline updated." },
+                { 1, "Project successfully updated." },
             };
         }
     }
