@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Diagnostics;
 
 namespace finalprojectSD340.Controllers
 {
@@ -19,6 +20,7 @@ namespace finalprojectSD340.Controllers
         private ProjectHelper _projectHelper;
         private TaskHelper _th;
         private ManageUsers _mu;
+        private readonly NotificationHelper _notifHelper;
 
 
         public PMController(ApplicationDbContext Db, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
@@ -28,8 +30,8 @@ namespace finalprojectSD340.Controllers
             _roleManager = roleManager;
             _projectHelper = new ProjectHelper(Db, userManager);
             _th = new TaskHelper(Db, userManager);
-            _mu = new ManageUsers(Db, userManager, roleManager);   
-
+            _mu = new ManageUsers(Db, userManager, roleManager);
+            _notifHelper = new NotificationHelper(_db, _userManager, _roleManager);
         }
 
 
@@ -53,7 +55,84 @@ namespace finalprojectSD340.Controllers
             }
         }
 
+        public async Task<IActionResult> PMNotifications()
+        {
+            try
+            {
+                string userName = User.Identity.Name;
+                ApplicationUser user = await _userManager.FindByEmailAsync(userName);
+                List<Notification> unopenedNotifications = _db.Notifications
+                    .Include(p => p.Project)
+                    .Where(n => n.UserId == user.Id && !n.IsOpened)
+                    .OrderByDescending(n => n.NotificationDate)
+                    .ToList();
 
+                List<Notification> openedNotifications = _db.Notifications
+                    .Include(p => p.Project)
+                    .Where(n => n.UserId == user.Id && n.IsOpened)
+                    .OrderBy(n => n.NotificationDate)
+                    .ToList();
+
+                ViewBag.OpenedNotifications = openedNotifications;
+
+                if (unopenedNotifications.Count == 0 && openedNotifications.Count == 0)
+                {
+                    ViewBag.Any = 1;
+                }
+
+                return View(unopenedNotifications);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Error", new { Message = ex.Message, Action = "PMNotifications" });
+            }
+        }
+
+        [Authorize(Roles= "Project Manager")]
+        [HttpPost]
+        public async Task<IActionResult> OpenNotification(int id)
+        {
+            try
+            {
+                string openCheck = await _notifHelper.OpenNotification(id);
+
+                if (openCheck != "Success")
+                {
+                    throw new Exception(openCheck);
+                }
+
+                return RedirectToAction("PMNotifications");
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Error", new { Message = ex.Message, Action = "PM" });
+            }
+        }
+
+        [Authorize(Roles = "Project Manager")]
+        [HttpPost]
+        public async Task<IActionResult> DeleteNotification(int notificationId)
+        {
+            try
+            {
+                Notification notification = _db.Notifications.First(n => n.Id == notificationId);
+
+                if (notification == null)
+                {
+                    throw new Exception("Notification Not Found");
+                }
+
+                _db.Notifications.Remove(notification);
+
+                await _db.SaveChangesAsync();
+
+                return RedirectToAction("PMNotifications");
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Error", new { Message = ex.Message, Action = "PMNotifications" });
+            }
+        }
 
         [Authorize(Roles="Project Manager")]
         public IActionResult PMProjectDetails(int? id, string? filter, string? message)
@@ -399,6 +478,14 @@ namespace finalprojectSD340.Controllers
             else if (result.Key == 0)
                 return BadRequest(result.Value);
             return RedirectToAction("PMProjectDetails", new { id = task.ProjectId, message = result.Value });
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error(string Message, string Action)
+        {
+            ViewBag.Action = Action;
+            ViewBag.Message = Message;
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

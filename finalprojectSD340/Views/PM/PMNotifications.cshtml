@@ -1,12 +1,12 @@
 ﻿@model IEnumerable<finalprojectSD340.Models.Notification>
 
 @{
-    ViewData["Title"] = "DeveloperNotifications";
+    ViewData["Title"] = "ProjectManagerNotification";
 }
 
 <h1>Notifications</h1>
 
-<a asp-action="DeveloperDashboard">Back</a>
+<a asp-action="PMDashboard">Back</a>
 
 @if (ViewBag.Any == 1)
 {
@@ -20,7 +20,7 @@
     <thead>
         <tr>
             <th>
-                Type
+                @Html.DisplayNameFor(model => model.Type)
             </th>
             <th></th>
             <th></th>
@@ -35,7 +35,7 @@
                     @item.Type - @item.NotificationDate.Date
                 </td>
                 <td></td>
-                <td></td>                
+                <td></td>
                 <td>
                     <button type="button" type="submit" class="collapsible">View Notification</button>
                     <div class="content">
@@ -59,11 +59,6 @@
 </table>
 
 <h3>Opened</h3>
-
-<p>
-    <a asp-controller="Dev" asp-action="DeveloperDashboard">Developer Dashboard</a>
-</p>
-
 <table class="table">
     <thead>
         <tr>
@@ -79,7 +74,9 @@
             <th>
                 Title
             </th>
-            <th></th>
+            <th>
+                
+            </th>
         </tr>
     </thead>
     <tbody>
