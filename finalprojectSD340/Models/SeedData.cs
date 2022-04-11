@@ -125,12 +125,12 @@ namespace finalprojectSD340.Models
 
                 context.Comments.AddRange(newComments);
 
-                //List<Notification> newNotifications = new List<Notification>()
-                //{
-                //    new Notification { Title = "notif 1", Body = "this is notif 1", Comment = newComments[0], NotificationDate = new DateTime(2022, 04, 01), ProjectId = 1 }
-                //};
+                List<Notification> newNotifications = new List<Notification>()
+                {
+                    new Notification { Title = "Complete", Body = "this is notif 1", NotificationDate = new DateTime(2022, 01, 01), ProjectId = 1, Type = NotificationType.Completed, User = dev1 }
+                };
 
-                //context.Notifications.AddRange(newNotifications);
+                context.Notifications.AddRange(newNotifications);
             }
 
             context.SaveChanges();

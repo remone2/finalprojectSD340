@@ -1,6 +1,7 @@
 ﻿using finalprojectSD340.Data;
 using finalprojectSD340.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace finalprojectSD340.HelperClasses
 {
@@ -14,6 +15,30 @@ namespace finalprojectSD340.HelperClasses
             _db = db;
             _userManager = userManager;
             _roleManager = roleManager;
+        }
+
+        [HttpPost]
+        public async Task<string> OpenNotification(int id)
+        {
+            try
+            {
+                Notification notification = _db.Notifications.First(n => n.Id == id);
+
+                if (notification == null)
+                {
+                    throw new Exception("Notification Not Found");
+                }
+
+                notification.IsOpened = true;
+
+                await _db.SaveChangesAsync();
+
+                return "Success";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
         }
 
         public async Task<string> CreateCompleteTaskNotification(string userId, int taskId)

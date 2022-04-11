@@ -6,10 +6,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace finalprojectSD340.Controllers
 {
-    [Authorize(Roles = "Developer, Admin")]
+    //[Authorize(Roles = "Developer, Admin")]
     public class DevController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -47,7 +48,7 @@ namespace finalprojectSD340.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("Error", "Home", ex.Message);
+                return RedirectToAction("Error", new { Message = ex.Message, Action = "DeveloperDashboard" });
             }
         }
 
@@ -57,17 +58,30 @@ namespace finalprojectSD340.Controllers
             {
                 string userName = User.Identity.Name;
                 ApplicationUser user = await _userManager.FindByEmailAsync(userName);
-                List<Notification> unopenedNotifications = _db.Notifications.Where(n => n.UserId == user.Id && !n.IsOpened).OrderByDescending(n => n.NotificationDate).ToList();
+                List<Notification> unopenedNotifications = _db.Notifications
+                    .Include(p => p.Project)
+                    .Where(n => n.UserId == user.Id && !n.IsOpened)
+                    .OrderByDescending(n => n.NotificationDate)
+                    .ToList();
 
-                List<Notification> openedNotifications = _db.Notifications.Where(n => n.UserId == user.Id).OrderBy(n => n.NotificationDate).ToList();
+                List<Notification> openedNotifications = _db.Notifications
+                    .Include(p => p.Project)
+                    .Where(n => n.UserId == user.Id && n.IsOpened)
+                    .OrderBy(n => n.NotificationDate)
+                    .ToList();
 
                 ViewBag.OpenedNotifications = openedNotifications;
+
+                if (unopenedNotifications.Count == 0 && openedNotifications.Count == 0)
+                {
+                    ViewBag.Any = 1;
+                }
 
                 return View(unopenedNotifications);
             }
             catch (Exception ex)
             {
-                return RedirectToAction("Error", "Home", ex.Message);
+                return RedirectToAction("Error", new { Message = ex.Message, Action = "DeveloperNotifications" });
             }
         }
 
@@ -78,13 +92,16 @@ namespace finalprojectSD340.Controllers
                 string userName = User.Identity.Name;
                 ApplicationUser dev = await _userManager.FindByEmailAsync(userName);
 
-                List<Models.Task> devTasks = _db.Tasks.Include(x => x.Project).Where(t => t.DeveloperId == dev.Id).ToList();
+                List<Models.Task> devTasks = _db.Tasks
+                    .Include(x => x.Project)
+                    .Where(t => t.DeveloperId == dev.Id)
+                    .ToList();
 
                 return View(devTasks);
             }
             catch (Exception ex)
             {
-                return RedirectToAction("Error", "Home", ex.Message);
+                return RedirectToAction("Error", new { Message = ex.Message, Action = "DeveloperTasks" });
             }
         }
 
@@ -113,6 +130,13 @@ namespace finalprojectSD340.Controllers
                     task.CompleteDate = DateTime.Now;
                     await _taskHelper.CalculateTaskCost(taskId);
                 }
+                bool CheckDevRole = await _userManager.IsInRoleAsync(user, "Developer");
+
+                if (CheckDevRole != true)
+                {
+                    await _db.SaveChangesAsync();
+                    return RedirectToAction("PMProjectDetails", "PM", new { id = task.ProjectId });
+                }
 
                 if (!task.CompleteNotificationSent)
                 {
@@ -125,27 +149,15 @@ namespace finalprojectSD340.Controllers
 
                 await _db.SaveChangesAsync();
 
-                var UserName = User.Identity.Name;
-                ApplicationUser CurrentUser = await _userManager.FindByNameAsync(UserName);
-                bool CheckDevRole = await _userManager.IsInRoleAsync(CurrentUser, "Developer");
-
-                if (CheckDevRole != true)
-                {
-                    return RedirectToAction("PMProjectDetails", "PM", new { id = task.ProjectId });
-                }
-                else
-                {
-                    return RedirectToAction("DeveloperTasks");
-                }
-
+                return RedirectToAction("DeveloperTasks");
             }
             catch (Exception ex)
             {
-                return RedirectToAction("Error", "Home", ex.Message);
+                return RedirectToAction("Error", new { Message = ex.Message, Action = "DeveloperTasks" });
             }
         }
 
-        [Authorize(Roles = "Developer, Project Manager, Admin")]
+        [Authorize(Roles = "Developer, Admin")]
         [HttpPost]
         public async Task<IActionResult> TaskPercentage(int percentInput, int taskId)
         {
@@ -172,7 +184,7 @@ namespace finalprojectSD340.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("Error", "Home", ex.Message);
+                return RedirectToAction("Error", new { Message = ex.Message, Action = "DeveloperTasks" });
             }
         }
 
@@ -235,8 +247,60 @@ namespace finalprojectSD340.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("Error", "Home", ex.Message);
+                return RedirectToAction("Error", new { Message = ex.Message, Action = "DeveloperTasks" });
             }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> OpenNotification(int id)
+        {
+            try
+            {
+                string openCheck = await _notifHelper.OpenNotification(id);
+
+                if (openCheck != "Success")
+                {
+                    throw new Exception(openCheck);
+                }
+
+                return RedirectToAction("DeveloperNotifications");
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Error", new { Message = ex.Message, Action = "DeveloperTasks" });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteNotification(int notificationId)
+        {
+            try
+            {
+                Notification notification = _db.Notifications.First(n => n.Id == notificationId);
+
+                if (notification == null)
+                {
+                    throw new Exception("Notification Not Found");
+                }
+
+                _db.Notifications.Remove(notification);
+
+                await _db.SaveChangesAsync();
+
+                return RedirectToAction("DeveloperNotifications");
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Error", new { Message = ex.Message, Action = "DeveloperNotifications" });
+            }
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error(string Message, string Action)
+        {
+            ViewBag.Action = Action;
+            ViewBag.Message = Message;
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }
