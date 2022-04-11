@@ -45,11 +45,19 @@
 
             <td>@item.ProjectManager.UserName </td>
             <td>
-                 @foreach(var t in item.Tasks)
+                 @{
+                     HashSet<string> developers = new HashSet<string>();
+                  }
+
+                 @foreach (var t in item.Tasks)
                  {
-                     @if (t.Developer != null)
-                        @t.Developer.UserName
-                        <br />
+                     if (t.Developer != null)
+                        developers.Add(t.Developer.UserName);
+                 }
+                 @foreach (var d in developers)
+                 {
+                     @d
+                     <br />
                  }
             </td>
 
