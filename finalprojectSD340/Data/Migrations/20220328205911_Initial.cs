@@ -125,7 +125,8 @@ namespace finalprojectSD340.Data.Migrations
                         name: "FK_Notifications_Comments_CommentId",
                         column: x => x.CommentId,
                         principalTable: "Comments",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Notifications_Projects_ProjectId",
                         column: x => x.ProjectId,

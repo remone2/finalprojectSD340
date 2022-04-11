@@ -13,6 +13,6 @@ namespace finalprojectSD340.Models
         public int TaskId { get; set; }
         [ForeignKey("TaskId")]
         public Task Task { get; set; }
-        public Notification? Notification { get; set; }
+        public Notification Notification { get; set; }
     }
 }
