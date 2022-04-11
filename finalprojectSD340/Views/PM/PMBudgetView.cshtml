@@ -45,7 +45,8 @@
             <td>
                  @foreach(var t in item.Tasks)
                  {
-                    @t.Developer.UserName       
+                     @if (t.Developer != null)
+                        @t.Developer.UserName       
                  }
             </td>
             <td>@item.Tasks.Count</td> 

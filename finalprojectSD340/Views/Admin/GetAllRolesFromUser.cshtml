@@ -2,6 +2,10 @@
 
 <h1>All Roles A User Has</h1>
 
+<p>
+     <a asp-controller="Admin" asp-action="AdminDashboard">Admin Dashboard</a>
+</p>
+
 <form asp-controller="Admin" asp-action="GetAllRolesFromUser">
     <select asp-items="@ViewBag.Users" name="id"></select>
     <button type="submit">Submit</button>

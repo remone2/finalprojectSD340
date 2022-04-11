@@ -22,6 +22,11 @@ namespace finalprojectSD340.Controllers
             _mu = new ManageUsers(db, userManager, roleManager);
         }
 
+        public ActionResult AdminDashboard()
+        {
+            return View();
+        }
+
         public async Task<IActionResult> GetAllRolesFromUser(string? id)
         {
             ViewBag.Users = new SelectList(_db.Users.ToList(), "Id", "UserName");
