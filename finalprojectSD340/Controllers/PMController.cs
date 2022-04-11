@@ -218,7 +218,7 @@ namespace finalprojectSD340.Controllers
                 return BadRequest(result.Value);
             }
 
-            return View();
+            return RedirectToAction("PMDashboard");
         }
 
         [Authorize(Roles = "Project Manager")]
@@ -249,7 +249,7 @@ namespace finalprojectSD340.Controllers
                 return BadRequest(result.Value);
             }
 
-            return RedirectToAction("PMDashboard");
+            return RedirectToAction("PMProjectDetails", new { id = projectId, message = result.Value });
         }
         
         public async Task<IActionResult> PMAddTask(int projectId)
@@ -309,6 +309,24 @@ namespace finalprojectSD340.Controllers
                 return BadRequest(result.Value);
             ViewBag.Message = result.Value;
             return View(_db.Tasks.Include(p => p.Project).Include(d => d.Developer).ToList());
+        }
+
+        [HttpPost]
+        public IActionResult PMDeleteProject(int projectId)
+        {
+            Dictionary<int, string> resultDict = _projectHelper.Delete(projectId);
+            KeyValuePair<int, string> result = resultDict.First();
+
+            if (result.Key == -1)
+            {
+                return NotFound(result.Value);
+            }
+            else if (result.Key == 0)
+            {
+                return BadRequest(result.Value);
+            }
+
+            return RedirectToAction("PMDashboard");
         }
 
         public async Task<IActionResult> PMAssignTask(int taskId)
