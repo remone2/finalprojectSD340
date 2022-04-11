@@ -99,11 +99,14 @@ namespace finalprojectSD340.Controllers
                 Models.Task task = _db.Tasks.First(t => t.Id == taskId);
 
                 if (task == null)
-                    return NotFound();
+                    return RedirectToAction("PMProjectDetails", "PM", new { id = task.ProjectId, message = "Task was not found." });
+
+                if (task.DeveloperId == null)
+                    return RedirectToAction("PMProjectDetails", "PM", new { id = task.ProjectId, message = "There is no developer assigned to this task." });
 
                 if (task.IsCompleted)
                 {
-                    throw new Exception("Task is already marked complete");
+                    return RedirectToAction("PMProjectDetails", "PM", new { id = task.ProjectId, message = "Task has been completed." });
                 }
 
                 if (!task.IsCompleted)
@@ -131,7 +134,7 @@ namespace finalprojectSD340.Controllers
 
                 if (CheckDevRole != true)
                 {
-                    return RedirectToAction("PMProjectDetails", "PM", new { id = task.ProjectId });
+                    return RedirectToAction("PMProjectDetails", "PM", new { id = task.ProjectId, message = "Task was completed." });
                 }
                 else
                 {

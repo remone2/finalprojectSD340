@@ -7,13 +7,18 @@
 <h1>Assign Task to a Developer</h1>
 
 <p>
-     <a asp-controller="PM" asp-action="PMDashboard">Project Manager Dashboard</a> |
+     <a asp-controller="PM" asp-action="PMProjectDetails" asp-route-id="@ViewBag.ProjectId">Project Details</a> |
      <a asp-action="">PM Notifications</a>
 </p>
 
 <form asp-controller="PM" asp-action="PMAssignTask" method="post">
+    <input type="hidden" name="taskId" value="@ViewBag.TaskId"/>
+    <label>Task Name @ViewBag.Task.Name</label>
+    <br />
+    <br />   
     <select asp-items="@ViewBag.Developers" name="devId"></select>
-    <select asp-items="@ViewBag.Tasks" name="taskId"></select>
+    <br />
+    <br />  
     <button type="submit">Submit</button>
 </form>
 
