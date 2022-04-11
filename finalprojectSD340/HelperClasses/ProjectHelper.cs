@@ -1,6 +1,7 @@
 ﻿using finalprojectSD340.Models;
 using finalprojectSD340.Data;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace finalprojectSD340.HelperClasses
 {
@@ -68,12 +69,43 @@ namespace finalprojectSD340.HelperClasses
 
         public override Dictionary<int, string> Delete(int id)
         {
-            Project? projectToDelete = _db.Projects.FirstOrDefault(p => p.Id == id);
+            Project? projectToDelete = _db.Projects.Include(p => p.Notifications)
+                .Include(p => p.Tasks).ThenInclude(t => t.Comments)
+                .Include(p => p.Tasks).ThenInclude(t => t.Notifications).FirstOrDefault(p => p.Id == id);
 
             if (projectToDelete != null)
             {
                 try
                 {
+                    List<Models.Task> tasks = projectToDelete.Tasks.ToList();
+                    List<Comment> commentsToDelete = new List<Comment>();
+                    foreach (var t in tasks)
+                    {
+                        foreach (var c in t.Comments)
+                        {
+                            commentsToDelete.Add(c);
+                        }                        
+                    }
+                    
+                    foreach (var c in commentsToDelete)
+                    {               
+                        _db.Comments.Remove(c);
+                    }
+
+                    List<Notification> notifsToDelete = new List<Notification>();
+                    foreach (var t in tasks)
+                    {
+                        foreach (var n in t.Notifications)
+                        {
+                            notifsToDelete.Add(n);
+                        }
+                    }
+
+                    foreach (var n in notifsToDelete)
+                    {
+                        _db.Notifications.Remove(n);
+                    }
+
                     _db.Projects.Remove(projectToDelete);
                     _db.SaveChanges();
                 }
