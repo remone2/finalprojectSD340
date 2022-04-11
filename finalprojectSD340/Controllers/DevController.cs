@@ -44,21 +44,28 @@ namespace finalprojectSD340.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return RedirectToAction("Error", "Home", ex.Message);
             }
         }
 
         public async Task<IActionResult> DeveloperNotifications()
         {
-            string userName = User.Identity.Name;
-            ApplicationUser user = await _userManager.FindByEmailAsync(userName);
-            List<Notification> unopenedNotifications = _db.Notifications.Where(n => n.UserId == user.Id && !n.IsOpened).OrderByDescending(n => n.NotificationDate).ToList();
+            try
+            {
+                string userName = User.Identity.Name;
+                ApplicationUser user = await _userManager.FindByEmailAsync(userName);
+                List<Notification> unopenedNotifications = _db.Notifications.Where(n => n.UserId == user.Id && !n.IsOpened).OrderByDescending(n => n.NotificationDate).ToList();
 
-            List<Notification> openedNotifications = _db.Notifications.Where(n => n.UserId == user.Id).OrderBy(n => n.NotificationDate).ToList();
+                List<Notification> openedNotifications = _db.Notifications.Where(n => n.UserId == user.Id).OrderBy(n => n.NotificationDate).ToList();
 
-            ViewBag.OpenedNotifications = openedNotifications;
+                ViewBag.OpenedNotifications = openedNotifications;
 
-            return View(unopenedNotifications);
+                return View(unopenedNotifications);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Error", "Home", ex.Message);
+            }
         }
 
         public async Task<IActionResult> DeveloperTasks()
@@ -74,7 +81,7 @@ namespace finalprojectSD340.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("Error", ex.Message);
+                return RedirectToAction("Error", "Home", ex.Message);
             }
         }
 
@@ -116,7 +123,7 @@ namespace finalprojectSD340.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("Error", ex.Message);
+                return RedirectToAction("Error", "Home", ex.Message);
             }
         }
 
@@ -146,7 +153,7 @@ namespace finalprojectSD340.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("Error", ex.Message);
+                return RedirectToAction("Error", "Home", ex.Message);
             }
         }
 
@@ -209,7 +216,7 @@ namespace finalprojectSD340.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("Error", ex.Message);
+                return RedirectToAction("Error", "Home", ex.Message);
             }
         }
     }
