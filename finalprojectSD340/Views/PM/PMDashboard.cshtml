@@ -45,14 +45,16 @@
                 else
                 {<td>x</td>}
 
-            <td>@item.ProjectManager.UserName</td>
+            <td>@item.ProjectManager.UserName </td>
             <td>
                  @foreach(var t in item.Tasks)
                  {
                      @if (t.Developer != null)
-                        @t.Developer.UserName       
+                        @t.Developer.UserName
+                        <br />
                  }
             </td>
+
             <td>@item.Tasks.Count</td> 
             <td>@item.Priority</td>
             <td>@item.Deadline</td>
