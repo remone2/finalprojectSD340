@@ -18,13 +18,18 @@ namespace finalprojectSD340.Models
         public ICollection<Notification> Notifications { get; set; }
         public Priority Priority { get; set; }
         public DateTime Deadline { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime CompleteDate { get; set; }
+        public double TaskCost { get; set; }
         public bool ReminderSent { get; set; } = false;
         public bool DeadlineNotificationSent { get; set; } = false;
         public bool CompleteNotificationSent { get; set; } = false;
+
         public Task()
         {
             Comments = new HashSet<Comment>();
             Notifications = new HashSet<Notification>();
-        }       
+        }
+
     }
 }

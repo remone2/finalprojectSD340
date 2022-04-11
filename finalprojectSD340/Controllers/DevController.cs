@@ -15,12 +15,15 @@ namespace finalprojectSD340.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ApplicationDbContext _db;
+        private readonly TaskHelper _taskHelper;
         private readonly NotificationHelper _notifHelper;
+        
         public DevController(ApplicationDbContext db, RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
         {
             _db = db;
             _userManager = userManager;
             _roleManager = roleManager;
+            _taskHelper = new TaskHelper(db, userManager);
             _notifHelper = new NotificationHelper(_db, _userManager, _roleManager);
         }
 
@@ -107,6 +110,8 @@ namespace finalprojectSD340.Controllers
                 {
                     task.IsCompleted = true;
                     task.CompletionPercentage = 100;
+                    task.CompleteDate = DateTime.Now;
+                    await _taskHelper.CalculateTaskCost(taskId);
                 }
 
                 if (!task.CompleteNotificationSent)
@@ -120,7 +125,19 @@ namespace finalprojectSD340.Controllers
 
                 await _db.SaveChangesAsync();
 
-                return RedirectToAction("DeveloperTasks");
+                var UserName = User.Identity.Name;
+                ApplicationUser CurrentUser = await _userManager.FindByNameAsync(UserName);
+                bool CheckDevRole = await _userManager.IsInRoleAsync(CurrentUser, "Developer");
+
+                if (CheckDevRole != true)
+                {
+                    return RedirectToAction("PMProjectDetails", "PM", new { id = task.ProjectId });
+                }
+                else
+                {
+                    return RedirectToAction("DeveloperTasks");
+                }
+
             }
             catch (Exception ex)
             {

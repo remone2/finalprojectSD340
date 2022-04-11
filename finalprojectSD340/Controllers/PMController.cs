@@ -1,4 +1,5 @@
 ﻿using finalprojectSD340.Data;
+using finalprojectSD340.HelperClasses;
 using finalprojectSD340.Models;
 using finalprojectSD340.HelperClasses;
 using Microsoft.AspNetCore.Authorization;
@@ -19,6 +20,7 @@ namespace finalprojectSD340.Controllers
         private TaskHelper _th;
         private ManageUsers _mu;
 
+
         public PMController(ApplicationDbContext Db, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _db = Db;
@@ -27,6 +29,7 @@ namespace finalprojectSD340.Controllers
             _projectHelper = new ProjectHelper(Db, userManager);
             _th = new TaskHelper(Db, userManager);
             _mu = new ManageUsers(Db, userManager, roleManager);   
+
         }
 
 
@@ -80,6 +83,57 @@ namespace finalprojectSD340.Controllers
             catch
             {
                 return NotFound();
+            }
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> CompleteProject(int id)
+        {
+            try
+            {
+                Project CurrentProject = _db.Projects.Include(p => p.Tasks).Where(p => p.Id == id).First();
+
+                if (CurrentProject == null)
+                {
+                    return NotFound();
+                }
+
+                if (CurrentProject.IsComplete)
+                {
+                    throw new Exception("Project is already marked complete");
+                }
+
+                if (CurrentProject.Tasks.Any(t => t.IsCompleted == false))
+                {
+                    throw new Exception("Ensure all tasks in this project are completed");
+                }
+
+                else
+                {
+                    try
+                    {
+                        string ProjectComplete = await _projectHelper.CompleteProject(id);
+
+                        if (ProjectComplete == "Project completed!")
+                        {
+                            await _db.SaveChangesAsync();
+                        }
+                        else
+                        {
+                            throw new Exception(ProjectComplete);
+                        }
+                        return RedirectToAction("PMDashBoard", new { message = ProjectComplete });
+                    }
+                    catch (Exception ex)
+                    {
+                        return NotFound(ex.Message);    
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Error", ex.Message);
             }
         }
 
