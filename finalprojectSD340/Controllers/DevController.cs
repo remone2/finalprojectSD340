@@ -1,4 +1,5 @@
 ﻿using finalprojectSD340.Data;
+using finalprojectSD340.HelperClasses;
 using finalprojectSD340.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -13,11 +14,15 @@ namespace finalprojectSD340.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ApplicationDbContext _db;
+        private readonly ProjectHelper _projectHelper;
+        private readonly TaskHelper _taskHelper;
         public DevController(ApplicationDbContext db, RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
         {
             _db = db;
             _userManager = userManager;
             _roleManager = roleManager;
+            _projectHelper = new ProjectHelper(db, userManager);
+            _taskHelper = new TaskHelper(db, userManager);
         }
 
         // GET: DevController
@@ -64,11 +69,26 @@ namespace finalprojectSD340.Controllers
                 {
                     task.IsCompleted = true;
                     task.CompletionPercentage = 100;
+                    task.CompleteDate = DateTime.Now;   // Kleis
+                    await _taskHelper.CalculateTaskCost(taskId); // Kleis
                 }
 
                 await _db.SaveChangesAsync();
 
-                return RedirectToAction("DeveloperTasks");
+                var UserName = User.Identity.Name;
+                ApplicationUser CurrentUser = await _userManager.FindByNameAsync(UserName);
+                bool CheckDevRole = await _userManager.IsInRoleAsync(CurrentUser, "Developer");
+
+
+                if (CheckDevRole != true)
+                {
+                    return RedirectToAction("PMProjectDetails", "PM", new { id = task.ProjectId });
+                }
+                else
+                {
+                    return RedirectToAction("DeveloperTasks");
+                }
+
             }
             catch (Exception ex)
             {

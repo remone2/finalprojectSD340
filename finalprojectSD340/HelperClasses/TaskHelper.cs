@@ -188,6 +188,7 @@ namespace finalprojectSD340.HelperClasses
             {
                 taskToAssign.DeveloperId = dev.Id;
                 taskToAssign.Developer = dev;
+                taskToAssign.StartDate = DateTime.Now; // Kleis added
                 await _db.SaveChangesAsync();
             }
             catch (Exception ex)
@@ -202,6 +203,50 @@ namespace finalprojectSD340.HelperClasses
             {
                 { 1, "Developer has been assigned." },
             };
+
+        }
+
+
+
+
+        public async Task<string>  CalculateTaskCost(int id)
+        {
+            Models.Task CurrentTask = _db.Tasks.First(t => t.Id == id);
+            ApplicationUser Dev = await _userManager.FindByIdAsync(CurrentTask.DeveloperId);
+
+            double Salary = Dev.Salary;
+            var TimeSpan = CurrentTask.CompleteDate - CurrentTask.StartDate;
+            int DayCount = TimeSpan.Days;
+
+            CurrentTask.TaskCost = DayCount * Salary;
+            await _db.SaveChangesAsync();
+            return "Cost calculated";
+        }
+
+        public string CompleteTask(int id)
+        {
+            Models.Task CurrentTask = _db.Tasks.First(t => t.Id == id);
+
+            if (CurrentTask != null)
+            {
+                return "Could not identify the task.";
+            }
+
+            try
+            {
+                CurrentTask.CompleteDate = DateTime.Now;
+                CurrentTask.CompletionPercentage = 100;
+                CurrentTask.IsCompleted = true;
+
+                CalculateTaskCost(id);
+                //_db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+
+            return "Task completed!";
         }
     }
 }

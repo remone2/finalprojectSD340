@@ -48,7 +48,8 @@ namespace finalprojectSD340.Models
                     NormalizedEmail = "PM@MITT.CA",
                     UserName = "pm@mitt.ca",
                     NormalizedUserName = "PM@MITT.CA",
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
+                    Salary = 5000
                 };
                 var hashed1Password = passwordHasher.HashPassword(firstProjManager, "Password!1");
                 firstProjManager.PasswordHash = hashed1Password;
@@ -61,8 +62,9 @@ namespace finalprojectSD340.Models
                     NormalizedEmail = "DEV1@MITT.CA",
                     UserName = "dev1@mitt.ca",
                     NormalizedUserName = "DEV1@MITT.CA",
-                    EmailConfirmed = true
-                };
+                    EmailConfirmed = true,
+                    Salary = 100
+            };
                 var hashed2Password = passwordHasher.HashPassword(dev1, "Password!1");
                 dev1.PasswordHash = hashed2Password;
                 await userManager.CreateAsync(dev1);
@@ -74,7 +76,8 @@ namespace finalprojectSD340.Models
                     NormalizedEmail = "DEV2@MITT.CA",
                     UserName = "dev2@mitt.ca",
                     NormalizedUserName = "DEV2@MITT.CA",
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
+                    Salary = 200
                 };
                 var hashed3Password = passwordHasher.HashPassword(dev2, "Password!1");
                 dev1.PasswordHash = hashed3Password;
@@ -87,8 +90,9 @@ namespace finalprojectSD340.Models
                     NormalizedEmail = "DEV3@MITT.CA",
                     UserName = "dev3@mitt.ca",
                     NormalizedUserName = "DEV3@MITT.CA",
-                    EmailConfirmed = true
-                };
+                    EmailConfirmed = true,
+                    Salary = 300
+            };
                 var hashed4Password = passwordHasher.HashPassword(dev3, "Password!1");
                 dev1.PasswordHash = hashed4Password;
                 await userManager.CreateAsync(dev3);
@@ -99,16 +103,16 @@ namespace finalprojectSD340.Models
                     new Project { Name = "project 1", Budget = 20000, Deadline = new DateTime(2022, 10, 01), Description = "first project", Priority = Priority.Low, ProjectManagerId = firstProjManager.Id },
                     new Project { Name = "project 2", Budget = 30000, Deadline = new DateTime(2022, 02, 01), Description = "second project", Priority = Priority.Moderate, ProjectManagerId = firstProjManager.Id },
                     new Project { Name = "project 3", Budget = 40000, Deadline = new DateTime(2022, 04, 01), Description = "third project", Priority = Priority.High, ProjectManagerId = firstProjManager.Id },
-                    new Project { Name = "project 4", Budget = 40000, Deadline = new DateTime(2022, 03, 01), Description = "fourth project", Priority = Priority.Low, IsComplete = true, ProjectCost = 50000, ProjectManagerId = firstProjManager.Id }
+                    new Project { Name = "project 4", Budget = 40000, Deadline = new DateTime(2022, 03, 01), Description = "fourth project", Priority = Priority.Low, ProjectManagerId = firstProjManager.Id }
                 };
 
                 context.Projects.AddRange(newProjects);
 
                 List<Task> newTasks = new List<Task>()
                 {
-                    new Task { Name = "task 1", Deadline = new DateTime(2022, 01, 15), Project = newProjects[1], Description = "its task 1", DeveloperId = dev1.Id, CompletionPercentage = 40, Priority = Priority.Moderate },
-                    new Task { Name = "task 2", Deadline = new DateTime(2022, 04, 01), Project = newProjects[2], Description = "its task 2", DeveloperId = dev2.Id, CompletionPercentage = 0, Priority = Priority.High },
-                    new Task { Name = "task 3", Deadline = new DateTime(2022, 02, 27), Project = newProjects[3], Description = "Task 3" , DeveloperId = dev3.Id, CompletionPercentage = 0, Priority = Priority.High }
+                    new Task { Name = "task 1", Deadline = new DateTime(2022, 01, 15), Project = newProjects[1], Description = "its task 1", DeveloperId = dev1.Id, CompletionPercentage = 40, Priority = Priority.Moderate, StartDate = new DateTime(2022, 01, 01) },
+                    new Task { Name = "task 2", Deadline = new DateTime(2022, 04, 01), Project = newProjects[2], Description = "its task 2", DeveloperId = dev2.Id, CompletionPercentage = 0, Priority = Priority.High, StartDate = new DateTime(2022, 03, 01)},
+                    new Task { Name = "task 3", Deadline = new DateTime(2022, 02, 27), Project = newProjects[3], Description = "Task 3" , DeveloperId = dev3.Id, CompletionPercentage = 0, Priority = Priority.High, StartDate = new DateTime(2022, 02, 01)}
                 };
 
                 context.Tasks.AddRange(newTasks);

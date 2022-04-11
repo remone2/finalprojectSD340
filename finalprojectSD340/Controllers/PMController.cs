@@ -1,4 +1,5 @@
 ﻿using finalprojectSD340.Data;
+using finalprojectSD340.HelperClasses;
 using finalprojectSD340.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -13,12 +14,16 @@ namespace finalprojectSD340.Controllers
         public ApplicationDbContext _db;
         private UserManager<ApplicationUser> _userManager;
         private RoleManager<IdentityRole> _roleManager;
+        private readonly ProjectHelper _projectHelper;
+        private readonly TaskHelper _taskHelper;
 
         public PMController(ApplicationDbContext Db, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _db = Db;
             _userManager = userManager;
             _roleManager = roleManager;
+            _projectHelper = new ProjectHelper(Db, userManager);
+            _taskHelper = new TaskHelper(Db, userManager);
         }
 
 
@@ -45,7 +50,7 @@ namespace finalprojectSD340.Controllers
 
 
         [Authorize(Roles="Project Manager")]
-        public IActionResult PMProjectDetails(int? id, string? filter)
+        public IActionResult PMProjectDetails(int? id, string? filter, string? message)
         {
             try
             {
@@ -71,6 +76,57 @@ namespace finalprojectSD340.Controllers
             catch
             {
                 return NotFound();
+            }
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> CompleteProject(int id)
+        {
+            try
+            {
+                Project CurrentProject = _db.Projects.Include(p => p.Tasks).Where(p => p.Id == id).First();
+
+                if (CurrentProject == null)
+                {
+                    return NotFound();
+                }
+
+                if (CurrentProject.IsComplete)
+                {
+                    throw new Exception("Project is already marked complete");
+                }
+
+                if (CurrentProject.Tasks.Any(t => t.IsCompleted == false))
+                {
+                    throw new Exception("Ensure all tasks in this project are completed");
+                }
+
+                else
+                {
+                    try
+                    {
+                        string ProjectComplete = await _projectHelper.CompleteProject(id);
+
+                        if (ProjectComplete == "Project completed!")
+                        {
+                            await _db.SaveChangesAsync();
+                        }
+                        else
+                        {
+                            throw new Exception(ProjectComplete);
+                        }
+                        return RedirectToAction("PMDashBoard", new { message = ProjectComplete });
+                    }
+                    catch (Exception ex)
+                    {
+                        return NotFound(ex.Message);    
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Error", ex.Message);
             }
         }
 

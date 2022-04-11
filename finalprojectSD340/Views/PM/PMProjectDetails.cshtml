@@ -34,6 +34,12 @@
     </dl>
 </div>
 
+<form method="post" asp-controller="PM" asp-action="CompleteProject" asp-route-id=@ViewBag.Project.Id>
+    <button type="submit">
+        Complete Project
+    </button>
+</form>
+<p style="color:red">@ViewBag.ErrorMessage</p>
 
 <h4>Tasks</h4>
 
@@ -70,7 +76,11 @@
 @*                LINKS FOR:
                 Task Details
                 TaskHelper*@
-                 <a asp-controller="Dev" asp-action="CompleteTask" asp-route-Id="@item.Id">Task Details</a>
+                 <form method="post" asp-controller="Dev" asp-action="CompleteTask" asp-route-taskId=@item.Id>
+                    <button type="submit">
+                        Complete Task
+                    </button>
+                </form>
             </td>
         </tr>
 }
