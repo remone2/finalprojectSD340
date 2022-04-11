@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace finalprojectSD340.Controllers
 {
-    [Authorize(Roles = "Developer, Admin")]
     public class DevController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -28,6 +27,7 @@ namespace finalprojectSD340.Controllers
         }
 
         // GET: DevController
+        [Authorize(Roles = "Developer, Admin")]
         public async Task<ActionResult> DeveloperDashboard()
         {
             try
@@ -51,6 +51,7 @@ namespace finalprojectSD340.Controllers
             }
         }
 
+        [Authorize(Roles = "Developer, Admin")]
         public async Task<IActionResult> DeveloperNotifications()
         {
             try
@@ -71,6 +72,7 @@ namespace finalprojectSD340.Controllers
             }
         }
 
+        [Authorize(Roles = "Developer, Admin")]
         public async Task<IActionResult> DeveloperTasks()
         {
             try
@@ -187,6 +189,7 @@ namespace finalprojectSD340.Controllers
             return View(task);
         }
 
+        [Authorize(Roles = "Developer, Admin")]
         [HttpPost]
         public async Task<IActionResult> MakeComment(int? taskId, string? comment, bool urgent)
         {

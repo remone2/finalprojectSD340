@@ -14,12 +14,12 @@
     <p><a asp-controller="Dev" asp-action="Dashboard">Developer Dashboard</a></p>       
 }
 
-@if (Model[1] == true) //pm
+@if (Model[2] == true) //pm
 {
     <p><a asp-controller="PM" asp-action="PMDashboard">Project Manager Dashboard</a></p>      
 }
 
-@if (Model[2] == true) //admin
+@if (Model[1] == true) //admin
 {
     <p><a asp-controller="Admin" asp-action="AdminDashboard">Admin Dashboard</a></p>        
 } 
