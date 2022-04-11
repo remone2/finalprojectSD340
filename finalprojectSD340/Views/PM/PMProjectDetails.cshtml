@@ -48,7 +48,7 @@
 <h4>Tasks</h4>
 
 <p>
-    <a asp-controller="" asp-action="" asp-route-filter="">Create New Task</a> |
+    <a asp-controller="PM" asp-action="PMAddTask" asp-route-projectId="@ViewBag.Project.Id" asp-route-filter="">Create New Task</a> |
     <a asp-controller="PM" asp-action="PMProjectDetails" asp-route-filter="filter">Hide Completed Tasks</a> |
     <a asp-controller="PM" asp-action="PMProjectDetails" asp-route-filter="">Show Completed Tasks</a>
 </p>
@@ -73,7 +73,10 @@
             <td>@item.Description</td>
             <td>@item.IsCompleted</td>
             <td>@item.CompletionPercentage</td>
-            <td>@item.Developer.UserName</td>
+            <td>
+                @if (item.Developer != null)
+                    @item.Developer.UserName
+            </td>
             <td>@item.Priority</td>
             <td>@item.Deadline</td>
             <td>
@@ -88,7 +91,7 @@
                 </form>
 
                  <a asp-controller="PM" asp-action="PMUpdateTask" asp-route-taskId="@item.Id">Update Task</a>
-
+                 <a asp-controller="PM" asp-action="PMAssignTask" asp-route-taskId="@item.Id">Assign Task</a>
             </td>
         </tr>
 }
@@ -97,4 +100,4 @@
 
 <br />
 
-<p>@ViewBag.Message</p>
+<p style="color:red">@ViewBag.Message</p>
