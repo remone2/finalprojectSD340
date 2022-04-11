@@ -153,5 +153,47 @@ namespace finalprojectSD340.HelperClasses
                 { 1, "Project successfully updated." },
             };
         }
+
+
+
+        public async Task<string> CalculateProjectCost(int id)
+        {
+            Project CurrentProject = _db.Projects.Where(p => p.Id == id).First();
+
+            ApplicationUser PM = await _userManager.FindByIdAsync(CurrentProject.ProjectManagerId);
+            double Salary = PM.Salary;
+            double TotalTaskCost = CurrentProject.Tasks.Select(t => t.TaskCost).Sum();
+            CurrentProject.ProjectCost = Salary + TotalTaskCost;
+            await _db.SaveChangesAsync();
+            return "Cost calculated";
+        }
+
+        public async Task<string> CompleteProject(int id)
+        {
+            Project CurrentProject = _db.Projects.First(p => p.Id == id);
+
+            if (CurrentProject == null)
+            {
+                return "Could not identify the project.";
+            }
+
+            if (CurrentProject.Tasks.Any(t => t.IsCompleted == false))
+            {
+                return "Please ensure all tasks within this project are set to complete.";
+            }
+
+            try
+            {
+                await CalculateProjectCost(id);
+                CurrentProject.IsComplete = true;
+                await _db.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+
+            return "Project completed!";
+        }
     }
 }
