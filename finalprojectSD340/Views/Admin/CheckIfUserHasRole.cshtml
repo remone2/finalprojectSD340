@@ -1,5 +1,9 @@
 ﻿<h1>Check If User Has A Role</h1>
 
+<p>
+     <a asp-controller="Admin" asp-action="AdminDashboard">Admin Dashboard</a>
+</p>
+
 <form asp-controller="Admin" asp-action="CheckIfUserHasRole">
     <select asp-items="@ViewBag.Users" name="userId"></select>
     <select asp-items="@ViewBag.Roles" name="roleId"></select>

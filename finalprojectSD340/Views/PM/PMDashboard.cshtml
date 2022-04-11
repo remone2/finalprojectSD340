@@ -6,7 +6,10 @@
      <a asp-action="Create">Create New Project</a> |
      <a asp-action="">PM Notifications</a> | 
      <a asp-action="PMTasks">All Tasks</a> |
-     <a asp-controller="PM" asp-action="PMBudgetView">Over Budget Projects</a>
+     <a asp-controller="PM" asp-action="PMBudgetView">Over Budget Projects</a> |
+     <a asp-controller="PM" asp-action="PMAddTask">Add Task to Project</a> |
+     <a asp-controller="PM" asp-action="PMDeleteTask">Delete a Task</a> |
+     <a asp-controller="PM" asp-action="PMAssignTask">Assign a Task to a Developer</a> |
 </p>
 
 
@@ -46,7 +49,8 @@
             <td>
                  @foreach(var t in item.Tasks)
                  {
-                    @t.Developer.UserName       
+                     @if (t.Developer != null)
+                        @t.Developer.UserName       
                  }
             </td>
             <td>@item.Tasks.Count</td> 
