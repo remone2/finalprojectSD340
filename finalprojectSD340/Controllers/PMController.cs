@@ -175,17 +175,17 @@ namespace finalprojectSD340.Controllers
 
                 if (CurrentProject == null)
                 {
-                    return NotFound();
+                    return RedirectToAction("PMProjectDetails", new { id = id, message = "Could not find Project." });
                 }
 
                 if (CurrentProject.IsComplete)
                 {
-                    throw new Exception("Project is already marked complete");
+                    return RedirectToAction("PMProjectDetails", new { id = id, message = "Project is already marked complete" });
                 }
 
                 if (CurrentProject.Tasks.Any(t => t.IsCompleted == false))
                 {
-                    throw new Exception("Ensure all tasks in this project are completed");
+                    return RedirectToAction("PMProjectDetails", new { id = id, message = "Ensure all tasks in this project are completed" });
                 }
 
                 else
@@ -267,6 +267,7 @@ namespace finalprojectSD340.Controllers
             }
         }
 
+
         [Authorize(Roles = "Project Manager")]
         public IActionResult PMCreateProject()
         {
@@ -296,7 +297,7 @@ namespace finalprojectSD340.Controllers
                 return BadRequest(result.Value);
             }
 
-            return View();
+            return RedirectToAction("PMDashboard");
         }
 
         [Authorize(Roles = "Project Manager")]
@@ -327,12 +328,13 @@ namespace finalprojectSD340.Controllers
                 return BadRequest(result.Value);
             }
 
-            return RedirectToAction("PMDashboard");
+            return RedirectToAction("PMProjectDetails", new { id = projectId, message = result.Value });
         }
         
-        public async Task<IActionResult> PMAddTask()
-        {
-            ViewBag.Projects = new SelectList(_db.Projects.ToList(), "Id", "Name");
+        public async Task<IActionResult> PMAddTask(int projectId)
+        {         
+            ViewBag.ProjectId = projectId;
+            ViewBag.Project = await _db.Projects.FirstOrDefaultAsync(p => p.Id == projectId);
 
             List<ApplicationUser> developers = new List<ApplicationUser>();
             IdentityRole developerRole = await _roleManager.FindByNameAsync("Developer");
@@ -348,7 +350,8 @@ namespace finalprojectSD340.Controllers
         [HttpPost]
         public async Task<IActionResult> PMAddTask(int projectId, string name, string desc, string? developerId, Priority priority, DateTime deadline)
         {
-            ViewBag.Projects = new SelectList(_db.Projects.ToList(), "Id", "Name");
+            ViewBag.ProjectId = projectId;
+            ViewBag.Project = await _db.Projects.FirstOrDefaultAsync(p => p.Id == projectId);
 
             List<ApplicationUser> developers = new List<ApplicationUser>();
             IdentityRole developerRole = await _roleManager.FindByNameAsync("Developer");
@@ -387,7 +390,25 @@ namespace finalprojectSD340.Controllers
             return View(_db.Tasks.Include(p => p.Project).Include(d => d.Developer).ToList());
         }
 
-        public async Task<IActionResult> PMAssignTask()
+        [HttpPost]
+        public IActionResult PMDeleteProject(int projectId)
+        {
+            Dictionary<int, string> resultDict = _projectHelper.Delete(projectId);
+            KeyValuePair<int, string> result = resultDict.First();
+
+            if (result.Key == -1)
+            {
+                return NotFound(result.Value);
+            }
+            else if (result.Key == 0)
+            {
+                return BadRequest(result.Value);
+            }
+
+            return RedirectToAction("PMDashboard");
+        }
+
+        public async Task<IActionResult> PMAssignTask(int taskId)
         {
             List<ApplicationUser> developers = new List<ApplicationUser>();
             IdentityRole developerRole = await _roleManager.FindByNameAsync("Developer");
@@ -397,7 +418,9 @@ namespace finalprojectSD340.Controllers
                     developers.Add(user);
             }
             ViewBag.Developers = new SelectList(developers, "Id", "UserName");
-            ViewBag.Tasks = new SelectList(_db.Tasks.ToList(), "Id", "Name");
+            ViewBag.Task = _db.Tasks.First(t => t.Id == taskId);
+            ViewBag.TaskId = taskId;
+            ViewBag.ProjectId = _db.Tasks.First(t => t.Id == taskId).ProjectId;
             return View();
         }
 
@@ -412,15 +435,23 @@ namespace finalprojectSD340.Controllers
                     developers.Add(user);
             }
             ViewBag.Developers = new SelectList(developers, "Id", "UserName");
-            ViewBag.Tasks = new SelectList(_db.Tasks.ToList(), "Id", "Name");
+            ViewBag.Task = _db.Tasks.First(t => t.Id == taskId);
+            ViewBag.TaskId = taskId;
+            ViewBag.ProjectId = _db.Tasks.First(t => t.Id == taskId).ProjectId;
 
-            Dictionary<int, string> taskDict = await _th.Assign(devId,taskId);
-            KeyValuePair<int, string> result = taskDict.First();
-            if (result.Key == -1)
-                return NotFound(result.Value);
-            else if (result.Key == 0)
-                return BadRequest(result.Value);
-            ViewBag.Message = result.Value;
+            if (developers.First(d => d.Id == devId).Tasks.FirstOrDefault(t => t.Id == taskId) == null)
+            {
+                Dictionary<int, string> taskDict = await _th.Assign(devId, taskId);
+                KeyValuePair<int, string> result = taskDict.First();
+                if (result.Key == -1)
+                    return NotFound(result.Value);
+                else if (result.Key == 0)
+                    return BadRequest(result.Value);
+                ViewBag.Message = result.Value;
+            }
+            else
+                ViewBag.Message = "Developer is already assigned to this task";
+            
             return View();
         }
 

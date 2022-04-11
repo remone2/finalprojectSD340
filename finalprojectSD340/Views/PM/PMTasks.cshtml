@@ -28,15 +28,12 @@
             <td>@item.IsCompleted</td>
             <td>@item.CompletionPercentage</td>
             <td>@item.Project.Name</td>
-            <td>@item.Developer.UserName</td>
+            <td>
+                @if (item.Developer != null)
+                    @item.Developer.UserName
+            </td>
             <td>@item.Priority</td>
             <td>@item.Deadline</td>
-            <td>
-@*                LINKS FOR:
-                Task Details
-                TaskHelper*@
-                 <a asp-controller="" asp-action="" asp-route-Id="@item.Id">Task Details</a>
-            </td>
         </tr>
     }
 }

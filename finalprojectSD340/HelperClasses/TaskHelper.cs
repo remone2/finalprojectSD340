@@ -45,7 +45,8 @@ namespace finalprojectSD340.HelperClasses
                     Developer = dev,
                     Priority = priority,
                     Deadline = deadline,
-                };
+                    StartDate = DateTime.Now, // Kleis added
+            };
 
                 await _db.AddAsync(newTask);
                 if (dev != null)
@@ -208,30 +209,30 @@ namespace finalprojectSD340.HelperClasses
             return "Cost calculated";
         }
 
-        public string CompleteTask(int id)
-        {
-            Models.Task CurrentTask = _db.Tasks.First(t => t.Id == id);
+        //public string CompleteTask(int id)
+        //{
+        //    Models.Task CurrentTask = _db.Tasks.First(t => t.Id == id);
 
-            if (CurrentTask != null)
-            {
-                return "Could not identify the task.";
-            }
+        //    if (CurrentTask != null)
+        //    {
+        //        return "Could not identify the task.";
+        //    }
 
-            try
-            {
-                CurrentTask.CompleteDate = DateTime.Now;
-                CurrentTask.CompletionPercentage = 100;
-                CurrentTask.IsCompleted = true;
+        //    try
+        //    {
+        //        CurrentTask.CompleteDate = DateTime.Now;
+        //        CurrentTask.CompletionPercentage = 100;
+        //        CurrentTask.IsCompleted = true;
 
-                CalculateTaskCost(id);
-                //_db.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
+        //        CalculateTaskCost(id);
+        //        //_db.SaveChanges();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return ex.Message;
+        //    }
 
-            return "Task completed!";
-        }
+        //    return "Task completed!";
+        //}
     }
 }

@@ -10,7 +10,7 @@ using System.Diagnostics;
 
 namespace finalprojectSD340.Controllers
 {
-    //[Authorize(Roles = "Developer, Admin")]
+
     public class DevController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -29,6 +29,7 @@ namespace finalprojectSD340.Controllers
         }
 
         // GET: DevController
+        [Authorize(Roles = "Developer, Admin")]
         public async Task<ActionResult> DeveloperDashboard()
         {
             try
@@ -52,6 +53,7 @@ namespace finalprojectSD340.Controllers
             }
         }
 
+        [Authorize(Roles = "Developer, Admin")]
         public async Task<IActionResult> DeveloperNotifications()
         {
             try
@@ -85,6 +87,7 @@ namespace finalprojectSD340.Controllers
             }
         }
 
+        [Authorize(Roles = "Developer, Admin")]
         public async Task<IActionResult> DeveloperTasks()
         {
             try
@@ -116,11 +119,14 @@ namespace finalprojectSD340.Controllers
                 Models.Task task = _db.Tasks.First(t => t.Id == taskId);
 
                 if (task == null)
-                    return NotFound();
+                    return RedirectToAction("PMProjectDetails", "PM", new { id = task.ProjectId, message = "Task was not found." });
+
+                if (task.DeveloperId == null)
+                    return RedirectToAction("PMProjectDetails", "PM", new { id = task.ProjectId, message = "There is no developer assigned to this task." });
 
                 if (task.IsCompleted)
                 {
-                    throw new Exception("Task is already marked complete");
+                    return RedirectToAction("PMProjectDetails", "PM", new { id = task.ProjectId, message = "Task has been completed." });
                 }
 
                 if (!task.IsCompleted)
@@ -199,6 +205,7 @@ namespace finalprojectSD340.Controllers
             return View(task);
         }
 
+        [Authorize(Roles = "Developer, Admin")]
         [HttpPost]
         public async Task<IActionResult> MakeComment(int? taskId, string? comment, bool urgent)
         {

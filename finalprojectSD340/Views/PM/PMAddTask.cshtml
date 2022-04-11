@@ -7,13 +7,13 @@
 <h1>Add Task</h1>
 
 <p>
-     <a asp-controller="PM" asp-action="PMDashboard">Project Manager Dashboard</a> |
+     <a asp-controller="PM" asp-action="PMProjectDetails" asp-route-id="@ViewBag.Project.Id">Project Details</a> |
      <a asp-action="PMNotifications">PM Notifications</a>
 </p>
 
 <form asp-controller="PM" asp-action="PMAddTask" method="post">   
-    <select asp-items="@ViewBag.Projects" name="projectId"></select>
-    <label>Select Project</label>
+    <input type="hidden" name="projectId" value="@ViewBag.ProjectId"/>
+    <label>Project Name @ViewBag.Project.Name</label>
     <br />
     <br />
     <input placeholder="Task Name" type="text" name="name" required="required" />
