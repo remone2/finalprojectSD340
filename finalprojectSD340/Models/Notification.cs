@@ -15,7 +15,7 @@ namespace finalprojectSD340.Models
         public int? TaskId { get; set; }
         public Task? Task { get; set; }
         public int? CommentId { get; set; }
-        public Comment Comment { get; set; }
+        public Comment? Comment { get; set; }
         public ApplicationUser? User { get; set; }
         public string? UserId { get; set; }
     }

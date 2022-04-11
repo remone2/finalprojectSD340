@@ -79,7 +79,7 @@ namespace finalprojectSD340.Data.Migrations
                     DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsUrgent = table.Column<bool>(type: "bit", nullable: false),
                     DeveloperId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    TaskId = table.Column<int>(type: "int", nullable: false)
+                    TaskId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -95,7 +95,7 @@ namespace finalprojectSD340.Data.Migrations
                         column: x => x.TaskId,
                         principalTable: "Tasks",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -110,7 +110,7 @@ namespace finalprojectSD340.Data.Migrations
                     NotificationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ProjectId = table.Column<int>(type: "int", nullable: false),
                     TaskId = table.Column<int>(type: "int", nullable: true),
-                    CommentId = table.Column<int>(type: "int", nullable: false),
+                    CommentId = table.Column<int>(type: "int", nullable: true),
                     ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
@@ -126,7 +126,7 @@ namespace finalprojectSD340.Data.Migrations
                         column: x => x.CommentId,
                         principalTable: "Comments",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_Notifications_Projects_ProjectId",
                         column: x => x.ProjectId,

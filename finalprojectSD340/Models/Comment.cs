@@ -10,9 +10,9 @@ namespace finalprojectSD340.Models
         public bool IsUrgent { get; set; }
         public string DeveloperId { get; set; }
         public ApplicationUser Developer { get; set; }
-        public int TaskId { get; set; }
+        public int? TaskId { get; set; }
         [ForeignKey("TaskId")]
-        public Task Task { get; set; }
-        public Notification Notification { get; set; }
+        public Task? Task { get; set; }
+        public Notification? Notification { get; set; }
     }
 }
