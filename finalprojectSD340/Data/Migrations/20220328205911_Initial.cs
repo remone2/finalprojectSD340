@@ -79,7 +79,7 @@ namespace finalprojectSD340.Data.Migrations
                     DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsUrgent = table.Column<bool>(type: "bit", nullable: false),
                     DeveloperId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    TaskId = table.Column<int>(type: "int", nullable: true)
+                    TaskId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -125,8 +125,7 @@ namespace finalprojectSD340.Data.Migrations
                         name: "FK_Notifications_Comments_CommentId",
                         column: x => x.CommentId,
                         principalTable: "Comments",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Notifications_Projects_ProjectId",
                         column: x => x.ProjectId,
