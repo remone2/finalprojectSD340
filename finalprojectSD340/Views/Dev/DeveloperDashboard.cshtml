@@ -1,0 +1,14 @@
+﻿
+@{
+    ViewData["Title"] = "DevDashboard";
+}
+
+<div class="text-center">
+    <h1>Dev Dashboard</h1>
+
+    <h4>Notifications! <a asp-action="DeveloperNotifications">@ViewBag.Notifications</a></h4>
+
+    <a asp-action="DeveloperTasks">View your Tasks</a>
+
+    <a asp-action="DeveloperNotifications">View your Notifications</a>
+</div>

@@ -76,13 +76,21 @@
 @*                LINKS FOR:
                 Task Details
                 TaskHelper*@
+
                  <form method="post" asp-controller="Dev" asp-action="CompleteTask" asp-route-taskId=@item.Id>
                     <button type="submit">
                         Complete Task
                     </button>
                 </form>
+
+                 <a asp-controller="PM" asp-action="PMUpdateTask" asp-route-taskId="@item.Id">Update Task</a>
+
             </td>
         </tr>
 }
     </tbody>
 </table>
+
+<br />
+
+<p>@ViewBag.Message</p>

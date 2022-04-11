@@ -1,10 +1,12 @@
 ﻿using finalprojectSD340.Data;
 using finalprojectSD340.HelperClasses;
 using finalprojectSD340.Models;
+using finalprojectSD340.HelperClasses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace finalprojectSD340.Controllers
 {
@@ -14,8 +16,10 @@ namespace finalprojectSD340.Controllers
         public ApplicationDbContext _db;
         private UserManager<ApplicationUser> _userManager;
         private RoleManager<IdentityRole> _roleManager;
-        private readonly ProjectHelper _projectHelper;
-        private readonly TaskHelper _taskHelper;
+        private ProjectHelper _projectHelper;
+        private TaskHelper _th;
+        private ManageUsers _mu;
+
 
         public PMController(ApplicationDbContext Db, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
@@ -23,7 +27,9 @@ namespace finalprojectSD340.Controllers
             _userManager = userManager;
             _roleManager = roleManager;
             _projectHelper = new ProjectHelper(Db, userManager);
-            _taskHelper = new TaskHelper(Db, userManager);
+            _th = new TaskHelper(Db, userManager);
+            _mu = new ManageUsers(Db, userManager, roleManager);   
+
         }
 
 
@@ -44,7 +50,7 @@ namespace finalprojectSD340.Controllers
             catch
             {
                 return NotFound();
-            } 
+            }
         }
 
 
@@ -55,6 +61,7 @@ namespace finalprojectSD340.Controllers
             try
             {
                 ViewBag.Project = _db.Projects.Where(p => p.Id == id).First();
+                ViewBag.Message = message;
 
                 var Tasks = _db.Tasks.Where(t => t.ProjectId == id)
                                            .Include(t => t.Developer)
@@ -181,9 +188,186 @@ namespace finalprojectSD340.Controllers
             }
         }
 
+        [Authorize(Roles = "Project Manager")]
+        public IActionResult PMCreateProject()
+        {
+            return View();
+        }
 
+        [HttpPost]
+        public async Task<IActionResult> PMCreateProject(string name, string desc, double budget, Priority priority, DateTime deadline)
+        {
+            string userName = User.Identity.Name;
+            ApplicationUser? pm = await _userManager.FindByEmailAsync(userName);
 
+            if (pm == null)
+            {
+                return NotFound();
+            }
 
+            Dictionary<int, string> resultDict = await _projectHelper.Add(name, desc, budget, pm.Id, priority, deadline);
+            KeyValuePair<int, string> result = resultDict.First();
 
+            if (result.Key == -1)
+            {
+                return NotFound(result.Value);
+            }
+            else if (result.Key == 0)
+            {
+                return BadRequest(result.Value);
+            }
+
+            return View();
+        }
+
+        [Authorize(Roles = "Project Manager")]
+        public IActionResult PMEditProject(int projectId)
+        {
+            Project? project = _db.Projects.FirstOrDefault(p => p.Id == projectId);
+
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            return View(project);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PMEditProject(int projectId, string name, string desc, double budget, Priority priority, DateTime deadline)
+        {
+            Dictionary<int, string> resultDict = _projectHelper.Update(projectId, name, desc, budget, priority, deadline);
+            KeyValuePair<int, string> result = resultDict.First();
+
+            if (result.Key == -1)
+            {
+                return NotFound(result.Value);
+            }
+            else if (result.Key == 0)
+            {
+                return BadRequest(result.Value);
+            }
+
+            return RedirectToAction("PMDashboard");
+        }
+        
+        public async Task<IActionResult> PMAddTask()
+        {
+            ViewBag.Projects = new SelectList(_db.Projects.ToList(), "Id", "Name");
+
+            List<ApplicationUser> developers = new List<ApplicationUser>();
+            IdentityRole developerRole = await _roleManager.FindByNameAsync("Developer");
+            foreach (var user in _db.Users.ToList())
+            {
+                if (await _mu.CheckForRole(user.Id, developerRole.Id))
+                    developers.Add(user);
+            }
+            ViewBag.Developers = new SelectList(developers, "Id", "UserName");
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PMAddTask(int projectId, string name, string desc, string? developerId, Priority priority, DateTime deadline)
+        {
+            ViewBag.Projects = new SelectList(_db.Projects.ToList(), "Id", "Name");
+
+            List<ApplicationUser> developers = new List<ApplicationUser>();
+            IdentityRole developerRole = await _roleManager.FindByNameAsync("Developer");
+            foreach (var user in _db.Users.ToList())
+            {
+                if (await _mu.CheckForRole(user.Id, developerRole.Id))
+                    developers.Add(user);
+            }
+            ViewBag.Developers = new SelectList(developers, "Id", "UserName");
+
+            Dictionary<int, string> taskDict = await _th.Add(projectId, name, desc, developerId, priority, deadline);
+            KeyValuePair<int, string> result = taskDict.First();
+            if (result.Key == -1)
+                return NotFound(result.Value);
+            else if (result.Key == 0)
+                return BadRequest(result.Value);
+            ViewBag.Message = result.Value;
+            return View();
+        }
+
+        public IActionResult PMDeleteTask()
+        {
+            return View(_db.Tasks.Include(p => p.Project).Include(d => d.Developer).ToList());
+        }
+
+        [HttpPost]
+        public IActionResult PMDeleteTask(int taskId)
+        {
+            Dictionary<int, string> taskDict = _th.Delete(taskId);
+            KeyValuePair<int, string> result = taskDict.First();
+            if (result.Key == -1)
+                return NotFound(result.Value);
+            else if (result.Key == 0)
+                return BadRequest(result.Value);
+            ViewBag.Message = result.Value;
+            return View(_db.Tasks.Include(p => p.Project).Include(d => d.Developer).ToList());
+        }
+
+        public async Task<IActionResult> PMAssignTask()
+        {
+            List<ApplicationUser> developers = new List<ApplicationUser>();
+            IdentityRole developerRole = await _roleManager.FindByNameAsync("Developer");
+            foreach (var user in _db.Users.ToList())
+            {
+                if (await _mu.CheckForRole(user.Id, developerRole.Id))
+                    developers.Add(user);
+            }
+            ViewBag.Developers = new SelectList(developers, "Id", "UserName");
+            ViewBag.Tasks = new SelectList(_db.Tasks.ToList(), "Id", "Name");
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PMAssignTask(string devId, int taskId)
+        {
+            List<ApplicationUser> developers = new List<ApplicationUser>();
+            IdentityRole developerRole = await _roleManager.FindByNameAsync("Developer");
+            foreach (var user in _db.Users.ToList())
+            {
+                if (await _mu.CheckForRole(user.Id, developerRole.Id))
+                    developers.Add(user);
+            }
+            ViewBag.Developers = new SelectList(developers, "Id", "UserName");
+            ViewBag.Tasks = new SelectList(_db.Tasks.ToList(), "Id", "Name");
+
+            Dictionary<int, string> taskDict = await _th.Assign(devId,taskId);
+            KeyValuePair<int, string> result = taskDict.First();
+            if (result.Key == -1)
+                return NotFound(result.Value);
+            else if (result.Key == 0)
+                return BadRequest(result.Value);
+            ViewBag.Message = result.Value;
+            return View();
+        }
+
+        public IActionResult PMUpdateTask(int taskId)
+        {
+            Models.Task? task = _db.Tasks.FirstOrDefault(t => t.Id == taskId);          
+
+            if (task == null)
+            {
+                return NotFound();
+            }
+
+            return View(task);
+        }
+
+        [HttpPost]
+        public IActionResult PMUpdateTask(int id, string name, string desc, double budget, Priority priority, DateTime deadline)
+        {
+            Models.Task task = _db.Tasks.Include(p => p.Project).First(t => t.Id == id);
+            Dictionary<int, string> taskDict = _th.Update(id, name, desc, budget, priority, deadline);
+            KeyValuePair<int, string> result = taskDict.First();
+            if (result.Key == -1)
+                return NotFound(result.Value);
+            else if (result.Key == 0)
+                return BadRequest(result.Value);
+            return RedirectToAction("PMProjectDetails", new { id = task.ProjectId, message = result.Value });
+        }
     }
 }
